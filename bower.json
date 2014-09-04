@@ -1,0 +1,13 @@
+{
+  "name":         "configurator.js",
+  "version":      "0.0.1a",
+  "main":         "dist/configurator.min.js",
+  "ignore":       [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "src/*"
+  ],
+  "dependencies": {}
+}
