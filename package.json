@@ -11,6 +11,9 @@
   "author":          "Christiaan Scheermeijer",
   "license":         "MIT",
   "readmeFilename":  "README.md",
+  "scripts":         {
+    "test": "grunt test"
+  },
   "dependencies":    {},
   "devDependencies": {
     "grunt-contrib-concat":  "~0.3.0",
