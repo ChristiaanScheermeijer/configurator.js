@@ -1,4 +1,4 @@
-# configurator.js [![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg)]
+# configurator.js ![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg)
 
 A config tree builder for Javascript
 
@@ -46,8 +46,3 @@ config.set({
   array: [true, false, false]
 });
 ```
-
-t2.set({
-property1: 'string',
-property2: 'anotherstring'
-});
