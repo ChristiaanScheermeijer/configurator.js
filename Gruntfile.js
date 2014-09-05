@@ -39,7 +39,17 @@ module.exports = function (grunt) {
         src:     '<%= concat.dist.dest %>',
         options: {
           specs:   'test/specs/*Spec.js',
-          helpers: 'test/helpers/*Helper.js'
+          helpers: 'test/helpers/*Helper.js',
+          template: require('grunt-template-jasmine-istanbul'),
+          templateOptions: {
+            coverage: 'build/coverage/coverage.json',
+            report: {
+              type: 'lcovonly',
+              options: {
+                dir: 'build/coverage'
+              }
+            }
+          }
         }
       }
     },
@@ -55,6 +65,12 @@ module.exports = function (grunt) {
     watch: {
       files: ['src/**/*.js', 'test/**/*.js'],
       tasks: ['build', 'test']
+    },
+
+    coveralls: {
+      dist: {
+        src: 'build/coverage/lcov.info'
+      }
     }
   });
 
@@ -63,9 +79,12 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jasmine');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-coveralls');
 
   grunt.registerTask('test', ['jshint', 'jasmine']);
   grunt.registerTask('build', ['concat', 'uglify']);
+
+  grunt.registerTask('travis', ['build', 'test', 'coveralls']);
   grunt.registerTask('default', ['build']);
 
 };

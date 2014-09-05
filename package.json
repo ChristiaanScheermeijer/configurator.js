@@ -22,6 +22,8 @@
     "grunt": "~0.4.1",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-contrib-jasmine": "~0.7.0",
-    "jshint-stylish": "~0.4.0"
+    "jshint-stylish": "~0.4.0",
+    "grunt-template-jasmine-istanbul": "~0.3.0",
+    "grunt-coveralls": "~1.0.0"
   }
 }

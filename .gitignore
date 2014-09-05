@@ -16,3 +16,4 @@ results/
 
 /.idea/
 /demo/
+.coveralls.yml

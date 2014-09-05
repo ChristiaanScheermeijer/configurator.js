@@ -1,4 +1,4 @@
-# configurator.js ![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg)
+# configurator.js ![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg) [![Coverage Status](https://img.shields.io/coveralls/ChristiaanScheermeijer/configurator.js.svg)](https://coveralls.io/r/ChristiaanScheermeijer/configurator.js?branch=development)
 
 A config tree builder for Javascript
 
