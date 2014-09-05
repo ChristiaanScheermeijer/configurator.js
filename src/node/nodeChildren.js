@@ -1,3 +1,7 @@
+/**
+ * @param parent
+ * @constructor
+ */
 function NodeChildren(parent) {
   this.objectNode = function (name) {
     return new ObjectNode(name, null, parent);

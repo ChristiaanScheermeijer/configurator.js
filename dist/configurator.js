@@ -288,6 +288,10 @@ function MixedNode(name, children, parent) {
 
 MixedNode.prototype = Object.create(Node.prototype);
 
+/**
+ * @param parent
+ * @constructor
+ */
 function NodeChildren(parent) {
   this.objectNode = function (name) {
     return new ObjectNode(name, null, parent);
@@ -380,6 +384,12 @@ function StringNode(name, children, parent) {
 
 StringNode.prototype = Object.create(Node.prototype);
 
+/**
+ * Main configurator function
+ *
+ * @param [tree]
+ * @returns {ObjectNode}
+ */
 function configurator(tree) {
   if (tree && Object.prototype.toString.call(tree) === '[object Array]') {
     return new ObjectNode('root', tree, null);
