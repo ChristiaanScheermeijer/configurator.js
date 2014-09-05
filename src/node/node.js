@@ -6,11 +6,11 @@ function Node(name, assert, children, parent, allowChildNodes) {
   this.parent = parent;
   this.isRequired = false;
   this.childNodes = {};
-  this.nodeChildren;
+  this.nodeChildren = null;
   this.allowChildNodes = allowChildNodes || false;
   this.asserts = assert ? [assert] : [];
-  this.defaultValue;
-  this.value;
+  this.defaultValue = null;
+  this.value = undefined;
 
   // for the argument tree builder
   if (true === this.allowChildNodes && children && children.length > 0) {
@@ -31,7 +31,8 @@ Node.prototype.get = function () {
 };
 
 Node.prototype.set = function (val) {
-  return this.value = this.validate(val);
+  this.validate(val);
+  return this.value;
 };
 
 Node.prototype.required = function () {
@@ -44,10 +45,14 @@ Node.prototype.default = function(val) {
   return this;
 };
 
+Node.prototype.regex = function(expr, expects) {
+  this.asserts.push(new RegexAssert(expr, expects));
+};
+
 Node.prototype.getLongname = function () {
   var name = [this.name], prev = this;
 
-  while(prev = prev.parent) {
+  while(!!(prev = prev.parent)) {
     if (prev.name !== 'root') {
       name.push(prev.name);
     }
@@ -57,7 +62,7 @@ Node.prototype.getLongname = function () {
 };
 
 Node.prototype.validate = function (value) {
-  var validatedVal;
+  var validatedVal, index, i;
 
   if (typeof value === 'undefined') {
     if (true === this.isRequired) {
@@ -71,7 +76,7 @@ Node.prototype.validate = function (value) {
     }
   }
 
-  for (var i = 0; i < this.asserts.length; i++) {
+  for (i = 0; i < this.asserts.length; i++) {
     this.asserts[i].test(this, value);
   }
 
@@ -80,19 +85,19 @@ Node.prototype.validate = function (value) {
     if (this instanceof ArrayNode) {
       validatedVal = [];
       if (this.childNodes && this.childNodes.all) {
-        for (var i = 0; i < value.length; i++) {
+        for (i = 0; i < value.length; i++) {
           // validate same validator for all Array children
           validatedVal[i] = this.childNodes.all.set(value[i]);
         }
       } else {
-        for (var index in this.childNodes) {
+        for (index in this.childNodes) {
           // validate each value
           validatedVal[index] = this.childNodes[index].set(value[index]);
         }
       }
     } else {
       validatedVal = {};
-      for (var index in this.childNodes) {
+      for (index in this.childNodes) {
         validatedVal[index] = this.childNodes[index].set(value[index]);
       }
     }
@@ -100,7 +105,8 @@ Node.prototype.validate = function (value) {
     validatedVal = value;
   }
 
-  return this.value = validatedVal;
+  this.value = validatedVal;
+  return this.value;
 };
 
 Node.prototype.end = function () {

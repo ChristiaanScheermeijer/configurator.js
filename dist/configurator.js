@@ -1,6 +1,6 @@
 (function(root, undefined) {
 
-  "use strict";
+  'use strict';
 
 
 /**
@@ -21,44 +21,44 @@ function AssertError(node, assert, message) {
 
 AssertError.prototype = Object.create(Error.prototype);
 
-
-function GreaterThan(greaterThan) {
+function GreaterThanAssert(greaterThan) {
   this.args = Array.prototype.slice.call(arguments, 0);
   this.test = function (node, value) {
     if (typeof value === 'string' && value.length <= greaterThan) {
-      throw new AssertError(node, 'GreaterThan', 'Expected value to contain ' + greaterThan + ' or more characters');
+      throw new AssertError(node, 'GreaterThanAssert', 'Expected value to contain ' + greaterThan + ' or more characters');
     }
 
     if (typeof value === 'number' && value <= greaterThan) {
-      throw new AssertError(node, 'GreaterThan', 'Expected value to be greater than ' + greaterThan + ' but is ' + value);
+      throw new AssertError(node, 'GreaterThanAssert',
+        'Expected value to be greater than ' + greaterThan + ' but is ' + value);
     }
 
     return true;
   };
 }
 
-function LessThan(lessThan) {
+function LessThanAssert(lessThan) {
   this.test = function (node, value) {
     if (typeof value === 'string' && value.length >= lessThan) {
-      throw new AssertError(node, 'LessThan', 'Expected value to contain ' + lessThan + ' or less characters');
+      throw new AssertError(node, 'LessThanAssert', 'Expected value to contain ' + lessThan + ' or less characters');
     }
 
     if (typeof value === 'number' && value >= lessThan) {
-      throw new AssertError(node, 'LessThan', 'Expected value to be less than ' + lessThan + ' but is ' + value);
+      throw new AssertError(node, 'LessThanAssert', 'Expected value to be less than ' + lessThan + ' but is ' + value);
     }
 
     return true;
-  }
+  };
 }
 
-function Regex(expression, expect) {
-  var regex = RegExp(expression);
+function RegexAssert(expression, expect) {
+  var regex = new RegExp(expression);
   var regexResult = expect || false;
   this.test = function (node, value) {
     if (regex.test(value) !== regexResult) {
-      throw new Error('Expected ')
+      throw new Error('Expected ');
     }
-  }
+  };
 }
 
 function StringAssert() {
@@ -109,6 +109,136 @@ function ArrayAssert() {
 }
 
 /**
+ * @constructor
+ */
+function Node(name, assert, children, parent, allowChildNodes) {
+  this.name = name;
+  this.parent = parent;
+  this.isRequired = false;
+  this.childNodes = {};
+  this.nodeChildren = null;
+  this.allowChildNodes = allowChildNodes || false;
+  this.asserts = assert ? [assert] : [];
+  this.defaultValue = null;
+  this.value = undefined;
+
+  // for the argument tree builder
+  if (true === this.allowChildNodes && children && children.length > 0) {
+    for (var i = 0; i < children.length; i++) {
+      children[i].parent = this;
+      this.childNodes[children[i].name] = children[i];
+    }
+  }
+
+  // for the method tree builder
+  if (parent && parent.childNodes) {
+    parent.childNodes[name] = this;
+  }
+}
+
+Node.prototype.get = function () {
+  return this.value;
+};
+
+Node.prototype.set = function (val) {
+  this.validate(val);
+  return this.value;
+};
+
+Node.prototype.required = function () {
+  this.isRequired = true;
+  return this;
+};
+
+Node.prototype.default = function(val) {
+  this.defaultValue = val;
+  return this;
+};
+
+Node.prototype.regex = function(expr, expects) {
+  this.asserts.push(new RegexAssert(expr, expects));
+};
+
+Node.prototype.getLongname = function () {
+  var name = [this.name], prev = this;
+
+  while(!!(prev = prev.parent)) {
+    if (prev.name !== 'root') {
+      name.push(prev.name);
+    }
+  }
+
+  return 'root[' + name.reverse().join('][') + ']';
+};
+
+Node.prototype.validate = function (value) {
+  var validatedVal, index, i;
+
+  if (typeof value === 'undefined') {
+    if (true === this.isRequired) {
+      throw new Error('Node `' + this.getLongname() + '` is required.');
+    }
+
+    if (this.defaultValue) {
+      value = this.defaultValue;
+    }else{
+      return this.value;
+    }
+  }
+
+  for (i = 0; i < this.asserts.length; i++) {
+    this.asserts[i].test(this, value);
+  }
+
+  if (true === this.allowChildNodes) {
+    // validate ArrayNodes
+    if (this instanceof ArrayNode) {
+      validatedVal = [];
+      if (this.childNodes && this.childNodes.all) {
+        for (i = 0; i < value.length; i++) {
+          // validate same validator for all Array children
+          validatedVal[i] = this.childNodes.all.set(value[i]);
+        }
+      } else {
+        for (index in this.childNodes) {
+          // validate each value
+          validatedVal[index] = this.childNodes[index].set(value[index]);
+        }
+      }
+    } else {
+      validatedVal = {};
+      for (index in this.childNodes) {
+        validatedVal[index] = this.childNodes[index].set(value[index]);
+      }
+    }
+  }else{
+    validatedVal = value;
+  }
+
+  this.value = validatedVal;
+  return this.value;
+};
+
+Node.prototype.end = function () {
+  if (this.parent && true === this.parent.allowChildNodes && this.parent.nodeChildren) {
+    return this.parent.nodeChildren;
+  }
+
+  return this.parent || this;
+};
+
+Node.prototype.children = function () {
+  if (true === this.allowChildNodes) {
+    if (!this.nodeChildren) {
+      this.nodeChildren = new NodeChildren(this);
+    }
+    return this.nodeChildren;
+  } else {
+    throw new Error('Node ' + this.name + ' cannot carry any children, only `Object` and `Array` nodes do.');
+  }
+};
+
+/**
  * @param name
  * @param [children]
  * @param [parent]
@@ -135,130 +265,6 @@ function BooleanNode(name, children, parent) {
 }
 
 BooleanNode.prototype = Object.create(Node.prototype);
-
-/**
- * @constructor
- */
-function Node(name, assert, children, parent, allowChildNodes) {
-  this.name = name;
-  this.parent = parent;
-  this.isRequired = false;
-  this.childNodes = {};
-  this.nodeChildren;
-  this.allowChildNodes = allowChildNodes || false;
-  this.asserts = assert ? [assert] : [];
-  this.defaultValue;
-  this.value;
-
-  // for the argument tree builder
-  if (true === this.allowChildNodes && children && children.length > 0) {
-    for (var i = 0; i < children.length; i++) {
-      children[i].parent = this;
-      this.childNodes[children[i].name] = children[i];
-    }
-  }
-
-  // for the method tree builder
-  if (parent && parent.childNodes) {
-    parent.childNodes[name] = this;
-  }
-}
-
-Node.prototype.get = function () {
-  return this.value;
-};
-
-Node.prototype.set = function (val) {
-  return this.value = this.validate(val);
-};
-
-Node.prototype.required = function () {
-  this.isRequired = true;
-  return this;
-};
-
-Node.prototype.default = function(val) {
-  this.defaultValue = val;
-  return this;
-};
-
-Node.prototype.getLongname = function () {
-  var name = [this.name], prev = this;
-
-  while(prev = prev.parent) {
-    if (prev.name !== 'root') {
-      name.push(prev.name);
-    }
-  }
-
-  return 'root[' + name.reverse().join('][') + ']';
-};
-
-Node.prototype.validate = function (value) {
-  var validatedVal;
-
-  if (typeof value === 'undefined') {
-    if (true === this.isRequired) {
-      throw new Error('Node `' + this.getLongname() + '` is required.');
-    }
-
-    if (this.defaultValue) {
-      value = this.defaultValue;
-    }else{
-      return this.value;
-    }
-  }
-
-  for (var i = 0; i < this.asserts.length; i++) {
-    this.asserts[i].test(this, value);
-  }
-
-  if (true === this.allowChildNodes) {
-    // validate ArrayNodes
-    if (this instanceof ArrayNode) {
-      validatedVal = [];
-      if (this.childNodes && this.childNodes.all) {
-        for (var i = 0; i < value.length; i++) {
-          // validate same validator for all Array children
-          validatedVal[i] = this.childNodes.all.set(value[i]);
-        }
-      } else {
-        for (var index in this.childNodes) {
-          // validate each value
-          validatedVal[index] = this.childNodes[index].set(value[index]);
-        }
-      }
-    } else {
-      validatedVal = {};
-      for (var index in this.childNodes) {
-        validatedVal[index] = this.childNodes[index].set(value[index]);
-      }
-    }
-  }else{
-    validatedVal = value;
-  }
-
-  return this.value = validatedVal;
-};
-
-Node.prototype.end = function () {
-  if (this.parent && true === this.parent.allowChildNodes && this.parent.nodeChildren) {
-    return this.parent.nodeChildren;
-  }
-
-  return this.parent || this;
-};
-
-Node.prototype.children = function () {
-  if (true === this.allowChildNodes) {
-    if (!this.nodeChildren) {
-      this.nodeChildren = new NodeChildren(this);
-    }
-    return this.nodeChildren;
-  } else {
-    throw new Error('Node ' + this.name + ' cannot carry any children, only `Object` and `Array` nodes do.');
-  }
-};
 
 function NodeChildren(parent) {
   this.objectNode = function (name) {
@@ -298,12 +304,12 @@ function NumberNode(name, children, parent) {
   Node.apply(this, [name, new NumberAssert(), children, parent, false]);
 
   this.greaterThan = function (num) {
-    this.asserts.push(new GreaterThan(num));
+    this.asserts.push(new GreaterThanAssert(num));
     return this;
   };
 
   this.lessThan = function (num) {
-    this.asserts.push(new LessThan(num));
+    this.asserts.push(new LessThanAssert(num));
     return this;
   };
 }
@@ -336,12 +342,12 @@ function StringNode(name, children, parent) {
   Node.apply(this, [name, new StringAssert(), children, parent, false]);
 
   this.greaterThan = function (num) {
-    this.asserts.push(new GreaterThan(num));
+    this.asserts.push(new GreaterThanAssert(num));
     return this;
   };
 
   this.lessThan = function (num) {
-    this.asserts.push(new LessThan(num));
+    this.asserts.push(new LessThanAssert(num));
     return this;
   };
 }

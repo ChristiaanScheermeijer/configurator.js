@@ -11,7 +11,9 @@ module.exports = function (grunt) {
       dist:    {
         src:  [
           'src/_intro.js',
+          'src/asserts/assertError.js',
           'src/asserts/*.js',
+          'src/node/node.js',
           'src/node/*.js',
           'src/core.js',
           'src/exports.js',
@@ -36,8 +38,8 @@ module.exports = function (grunt) {
       dist: {
         src:     '<%= concat.dist.dest %>',
         options: {
-          specs:    'test/specs/*Spec.js',
-          helpers:  'test/helpers/*Helper.js'
+          specs:   'test/specs/*Spec.js',
+          helpers: 'test/helpers/*Helper.js'
         }
       }
     },
@@ -45,12 +47,8 @@ module.exports = function (grunt) {
     jshint: {
       files:   ['dist/configurator.js'],
       options: {
-        globals:  {
-          console:  true,
-          module:   true,
-          document: true
-        },
-        jshintrc: '.jshintrc'
+        jshintrc: '.jshintrc',
+        reporter: require('jshint-stylish')
       }
     },
 
