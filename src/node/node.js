@@ -40,19 +40,19 @@ Node.prototype.required = function () {
   return this;
 };
 
-Node.prototype.default = function(val) {
+Node.prototype.default = function (val) {
   this.defaultValue = val;
   return this;
 };
 
-Node.prototype.regex = function(expr, expects) {
+Node.prototype.regex = function (expr, expects) {
   this.asserts.push(new RegexAssert(expr, expects));
 };
 
 Node.prototype.getLongname = function () {
   var name = [this.name], prev = this;
 
-  while(!!(prev = prev.parent)) {
+  while (!!(prev = prev.parent)) {
     if (prev.name !== 'root') {
       name.push(prev.name);
     }
@@ -71,7 +71,7 @@ Node.prototype.validate = function (value) {
 
     if (this.defaultValue) {
       value = this.defaultValue;
-    }else{
+    } else {
       return this.value;
     }
   }
@@ -82,7 +82,7 @@ Node.prototype.validate = function (value) {
 
   if (true === this.allowChildNodes) {
     // validate ArrayNodes
-    if (this instanceof ArrayNode) {
+    if ('[object Array]' === Object.prototype.toString.call(value)) {
       validatedVal = [];
       if (this.childNodes && this.childNodes.all) {
         for (i = 0; i < value.length; i++) {
@@ -95,13 +95,21 @@ Node.prototype.validate = function (value) {
           validatedVal[index] = this.childNodes[index].set(value[index]);
         }
       }
-    } else {
+    } else if ('[object Object]' === Object.prototype.toString.call(value)) {
       validatedVal = {};
-      for (index in this.childNodes) {
-        validatedVal[index] = this.childNodes[index].set(value[index]);
+
+      if (this.childNodes && this.childNodes.all) {
+        for (index in value) {
+          // validate same validator for all Object children
+          validatedVal[index] = this.childNodes.all.set(value[index]);
+        }
+      } else {
+        for (index in this.childNodes) {
+          validatedVal[index] = this.childNodes[index].set(value[index]);
+        }
       }
     }
-  }else{
+  } else {
     validatedVal = value;
   }
 

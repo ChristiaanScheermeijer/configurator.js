@@ -11,7 +11,7 @@ function AssertError(node, assert, message) {
   this.node = node;
   this.name = 'AssertError';
   this.assert = assert;
-  this.message = 'AssertError for ' + node.getLongname() + ': ' + message;
+  this.message = node.getLongname() + ': ' + message;
 }
 
 AssertError.prototype = Object.create(Error.prototype);

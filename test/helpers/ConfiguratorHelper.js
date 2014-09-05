@@ -27,6 +27,12 @@ function methodConfigHelper() {
             .booleanNode('all').end()
           .end()
         .end()
+        .mixedNode('mixed').end()
+        .mixedNode('mixedWithChildren')
+          .children()
+            .stringNode('all').end()
+          .end()
+        .end()
       .end();
   });
 
@@ -52,6 +58,10 @@ function argConfigHelper() {
       ]),
       new configurator.ArrayNode('array', [
         new configurator.BooleanNode('all')
+      ]),
+      new configurator.MixedNode('mixed'),
+      new configurator.MixedNode('mixedWithChildren', [
+        new configurator.StringNode('all')
       ])
     ]);
   });

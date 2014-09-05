@@ -19,6 +19,10 @@ function NodeChildren(parent) {
     return new NumberNode(name, null, parent);
   };
 
+  this.mixedNode = function (name) {
+    return new MixedNode(name, null, parent);
+  };
+
   this.end = function () {
     return parent;
   };

@@ -47,7 +47,7 @@ function sharedPropertiesSpecHelper() {
       expect(function () {
         config.set({
           property2: 'anotherstring',
-          nested: {
+          nested:    {
             property2: 'string'
           }
         });
@@ -60,6 +60,65 @@ function sharedPropertiesSpecHelper() {
       });
 
       expect(config.get().property2).toEqual('defaultString');
+    });
+
+    it('should allow any type for mixed nodes', function () {
+      expect(function () {
+        config.set({
+          property1: 5,
+          mixedNode: true
+        })
+      }).not.toThrow();
+
+      expect(function () {
+        config.set({
+          property1: 5,
+          mixedNode: 5
+        })
+      }).not.toThrow();
+
+      expect(function () {
+        config.set({
+          property1: 5,
+          mixedNode: 'string'
+        })
+      }).not.toThrow();
+    });
+
+    it('should allow and validate mixed node children', function () {
+      expect(function () {
+        config.set({
+          property1:             5,
+          mixedNodeWithChildren: ['string', 'anotherstring']
+        });
+      }).not.toThrow();
+
+      expect(function () {
+        config.set({
+          property1:             5,
+          mixedWithChildren: {
+            key1: 'string',
+            key2: 'string'
+          }
+        });
+      }).not.toThrow();
+
+      expect(function () {
+        config.set({
+          property1:             5,
+          mixedWithChildren: [true, 'anotherstring']
+        });
+      }).toThrowError(/type mismatch expected `string` got `boolean`/);
+
+      expect(function () {
+        config.set({
+          property1:             5,
+          mixedWithChildren: {
+            key1: true,
+            key2: 'string'
+          }
+        });
+      }).toThrowError(/type mismatch expected `string` got `boolean`/);
     });
   });
 }

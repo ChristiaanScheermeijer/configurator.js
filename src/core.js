@@ -11,3 +11,4 @@ configurator.NumberNode = NumberNode;
 configurator.BooleanNode = BooleanNode;
 configurator.ArrayNode = ArrayNode;
 configurator.ObjectNode = ObjectNode;
+configurator.MixedNode = MixedNode;

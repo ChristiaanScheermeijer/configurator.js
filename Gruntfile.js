@@ -54,9 +54,8 @@ module.exports = function (grunt) {
 
     watch: {
       files: ['src/**/*.js', 'test/**/*.js'],
-      tasks: ['test', 'build']
+      tasks: ['build', 'test']
     }
-
   });
 
   grunt.loadNpmTasks('grunt-contrib-uglify');
