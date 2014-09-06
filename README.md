@@ -32,7 +32,7 @@ The assertions are exposed as methods for each `Node`.
 ```js
 var config = configurator([
   new configurator.NumberNode('property1').required().greaterThan(4).lessThan(11),
-  new configurator.StringNode('property2').default('defaultString'),
+  new configurator.StringNode('property2').setDefault('defaultString'),
   new configurator.ObjectNode('nested', [
     new configurator.BooleanNode('property1').required(),
     new configurator.StringNode('property2')
@@ -60,7 +60,7 @@ To add children to a property call the `.children()` method on the `Object`, `Ar
 var config = configurator()
   .children()
     .numberNode('property1').required().greaterThan(4).lessThan(11).end()
-    .stringNode('property2').default('defaultString').end()
+    .stringNode('property2').setDefault('defaultString').end()
     .objectNode('nested')
       .children()
         .booleanNode('property1').required().end()

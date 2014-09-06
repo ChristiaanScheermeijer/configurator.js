@@ -40,13 +40,14 @@ Node.prototype.required = function () {
   return this;
 };
 
-Node.prototype.default = function (val) {
+Node.prototype.setDefault = function (val) {
   this.defaultValue = val;
   return this;
 };
 
 Node.prototype.regex = function (expr, expects) {
   this.asserts.push(new RegexAssert(expr, expects));
+  return this;
 };
 
 Node.prototype.getLongname = function () {

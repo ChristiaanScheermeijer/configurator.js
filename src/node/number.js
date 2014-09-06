@@ -19,11 +19,6 @@ function NumberNode(name, children, parent) {
     return this;
   };
 
-  this.regex = function (regex, expected) {
-    this.asserts.push(new RegexAssert(regex, expected));
-    return this;
-  };
-
   this.choice = function (choices) {
     this.asserts.push(new ChoiceAssert(choices));
     return this;

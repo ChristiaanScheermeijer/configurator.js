@@ -178,13 +178,14 @@ Node.prototype.required = function () {
   return this;
 };
 
-Node.prototype.default = function (val) {
+Node.prototype.setDefault = function (val) {
   this.defaultValue = val;
   return this;
 };
 
 Node.prototype.regex = function (expr, expects) {
   this.asserts.push(new RegexAssert(expr, expects));
+  return this;
 };
 
 Node.prototype.getLongname = function () {
@@ -328,11 +329,6 @@ function MixedNode(name, children, parent) {
     return this;
   };
 
-  this.regex = function (regex, expected) {
-    this.asserts.push(new RegexAssert(regex, expected));
-    return this;
-  };
-
   this.choice = function (choices) {
     this.asserts.push(new ChoiceAssert(choices));
     return this;
@@ -401,11 +397,6 @@ function NumberNode(name, children, parent) {
     return this;
   };
 
-  this.regex = function (regex, expected) {
-    this.asserts.push(new RegexAssert(regex, expected));
-    return this;
-  };
-
   this.choice = function (choices) {
     this.asserts.push(new ChoiceAssert(choices));
     return this;
@@ -446,11 +437,6 @@ function StringNode(name, children, parent) {
 
   this.lessThan = function (num) {
     this.asserts.push(new LessThanAssert(num));
-    return this;
-  };
-
-  this.regex = function (regex, expected) {
-    this.asserts.push(new RegexAssert(regex, expected));
     return this;
   };
 
