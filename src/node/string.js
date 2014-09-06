@@ -18,6 +18,16 @@ function StringNode(name, children, parent) {
     this.asserts.push(new LessThanAssert(num));
     return this;
   };
+
+  this.choice = function (choices) {
+    this.asserts.push(new ChoiceAssert(choices));
+    return this;
+  };
+
+  this.notEmpty = function () {
+    this.asserts.push(new NotEmptyAssert());
+    return this;
+  };
 }
 
 StringNode.prototype = Object.create(Node.prototype);

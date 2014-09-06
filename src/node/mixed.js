@@ -6,8 +6,8 @@
  * @implements Node
  * @constructor
  */
-function NumberNode(name, children, parent) {
-  Node.apply(this, [name, new NumberAssert(), children, parent, false]);
+function MixedNode(name, children, parent) {
+  Node.apply(this, [name, null, children, parent, true]);
 
   this.greaterThan = function (num) {
     this.asserts.push(new GreaterThanAssert(num));
@@ -23,6 +23,11 @@ function NumberNode(name, children, parent) {
     this.asserts.push(new ChoiceAssert(choices));
     return this;
   };
+
+  this.notEmpty = function () {
+    this.asserts.push(new NotEmptyAssert());
+    return this;
+  };
 }
 
-NumberNode.prototype = Object.create(Node.prototype);
+MixedNode.prototype = Object.create(Node.prototype);

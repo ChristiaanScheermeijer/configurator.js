@@ -16,10 +16,22 @@ function AssertError(node, assert, message) {
   this.node = node;
   this.name = 'AssertError';
   this.assert = assert;
-  this.message = 'AssertError for ' + node.getLongname() + ': ' + message;
+  this.message = node.getLongname() + ': ' + message;
 }
 
 AssertError.prototype = Object.create(Error.prototype);
+
+function CountAssert(min, max) {
+  this.test = function (node, value) {
+    if (typeof min === 'number' && value.length < min) {
+      throw new AssertError(node, 'CountAssert', 'Expected array to contain `' + min + '` or more values');
+    }
+
+    if (typeof max === 'number' && value.length > max) {
+      throw new AssertError(node, 'CountAssert', 'Expected array to contain `' + max + '` or less values');
+    }
+  };
+}
 
 function GreaterThanAssert(greaterThan) {
   this.args = Array.prototype.slice.call(arguments, 0);
@@ -53,10 +65,26 @@ function LessThanAssert(lessThan) {
 
 function RegexAssert(expression, expect) {
   var regex = new RegExp(expression);
-  var regexResult = expect || false;
+  var regexResult = expect || true;
   this.test = function (node, value) {
     if (regex.test(value) !== regexResult) {
-      throw new Error('Expected ');
+      throw new AssertError(node, 'RegexAssert', 'Expected value to match regex `' + regex.toString() + '`');
+    }
+  };
+}
+
+function ChoiceAssert(choices) {
+  this.test = function (node, value) {
+    if (choices && -1 === choices.indexOf(value)) {
+      throw new AssertError(node, 'ChoiceAssert', 'Given value is not a valid choise, choose from [' + choices.join(',') + ']');
+    }
+  };
+}
+
+function NotEmptyAssert() {
+  this.test = function (node, value) {
+    if ('' === value) {
+      throw new AssertError(node, 'NotEmptyAssert', 'Expect value not to be blank');
     }
   };
 }
@@ -150,19 +178,20 @@ Node.prototype.required = function () {
   return this;
 };
 
-Node.prototype.default = function(val) {
+Node.prototype.setDefault = function (val) {
   this.defaultValue = val;
   return this;
 };
 
-Node.prototype.regex = function(expr, expects) {
+Node.prototype.regex = function (expr, expects) {
   this.asserts.push(new RegexAssert(expr, expects));
+  return this;
 };
 
 Node.prototype.getLongname = function () {
   var name = [this.name], prev = this;
 
-  while(!!(prev = prev.parent)) {
+  while (!!(prev = prev.parent)) {
     if (prev.name !== 'root') {
       name.push(prev.name);
     }
@@ -181,7 +210,7 @@ Node.prototype.validate = function (value) {
 
     if (this.defaultValue) {
       value = this.defaultValue;
-    }else{
+    } else {
       return this.value;
     }
   }
@@ -192,7 +221,7 @@ Node.prototype.validate = function (value) {
 
   if (true === this.allowChildNodes) {
     // validate ArrayNodes
-    if (this instanceof ArrayNode) {
+    if ('[object Array]' === Object.prototype.toString.call(value)) {
       validatedVal = [];
       if (this.childNodes && this.childNodes.all) {
         for (i = 0; i < value.length; i++) {
@@ -205,13 +234,21 @@ Node.prototype.validate = function (value) {
           validatedVal[index] = this.childNodes[index].set(value[index]);
         }
       }
-    } else {
+    } else if ('[object Object]' === Object.prototype.toString.call(value)) {
       validatedVal = {};
-      for (index in this.childNodes) {
-        validatedVal[index] = this.childNodes[index].set(value[index]);
+
+      if (this.childNodes && this.childNodes.all) {
+        for (index in value) {
+          // validate same validator for all Object children
+          validatedVal[index] = this.childNodes.all.set(value[index]);
+        }
+      } else {
+        for (index in this.childNodes) {
+          validatedVal[index] = this.childNodes[index].set(value[index]);
+        }
       }
     }
-  }else{
+  } else {
     validatedVal = value;
   }
 
@@ -248,6 +285,11 @@ Node.prototype.children = function () {
  */
 function ArrayNode(name, children, parent) {
   Node.apply(this, [name, new ArrayAssert(), children, parent, true]);
+
+  this.count = function (min, max) {
+    this.asserts.push(new CountAssert(min, max));
+    return this;
+  };
 }
 
 ArrayNode.prototype = Object.create(Node.prototype);
@@ -266,6 +308,44 @@ function BooleanNode(name, children, parent) {
 
 BooleanNode.prototype = Object.create(Node.prototype);
 
+/**
+ * @param name
+ * @param [children]
+ * @param [parent]
+ *
+ * @implements Node
+ * @constructor
+ */
+function MixedNode(name, children, parent) {
+  Node.apply(this, [name, null, children, parent, true]);
+
+  this.greaterThan = function (num) {
+    this.asserts.push(new GreaterThanAssert(num));
+    return this;
+  };
+
+  this.lessThan = function (num) {
+    this.asserts.push(new LessThanAssert(num));
+    return this;
+  };
+
+  this.choice = function (choices) {
+    this.asserts.push(new ChoiceAssert(choices));
+    return this;
+  };
+
+  this.notEmpty = function () {
+    this.asserts.push(new NotEmptyAssert());
+    return this;
+  };
+}
+
+MixedNode.prototype = Object.create(Node.prototype);
+
+/**
+ * @param parent
+ * @constructor
+ */
 function NodeChildren(parent) {
   this.objectNode = function (name) {
     return new ObjectNode(name, null, parent);
@@ -285,6 +365,10 @@ function NodeChildren(parent) {
 
   this.numberNode = function (name) {
     return new NumberNode(name, null, parent);
+  };
+
+  this.mixedNode = function (name) {
+    return new MixedNode(name, null, parent);
   };
 
   this.end = function () {
@@ -310,6 +394,11 @@ function NumberNode(name, children, parent) {
 
   this.lessThan = function (num) {
     this.asserts.push(new LessThanAssert(num));
+    return this;
+  };
+
+  this.choice = function (choices) {
+    this.asserts.push(new ChoiceAssert(choices));
     return this;
   };
 }
@@ -350,10 +439,26 @@ function StringNode(name, children, parent) {
     this.asserts.push(new LessThanAssert(num));
     return this;
   };
+
+  this.choice = function (choices) {
+    this.asserts.push(new ChoiceAssert(choices));
+    return this;
+  };
+
+  this.notEmpty = function () {
+    this.asserts.push(new NotEmptyAssert());
+    return this;
+  };
 }
 
 StringNode.prototype = Object.create(Node.prototype);
 
+/**
+ * Main configurator function
+ *
+ * @param [tree]
+ * @returns {ObjectNode}
+ */
 function configurator(tree) {
   if (tree && Object.prototype.toString.call(tree) === '[object Array]') {
     return new ObjectNode('root', tree, null);
@@ -367,12 +472,13 @@ configurator.NumberNode = NumberNode;
 configurator.BooleanNode = BooleanNode;
 configurator.ArrayNode = ArrayNode;
 configurator.ObjectNode = ObjectNode;
+configurator.MixedNode = MixedNode;
 
 if (typeof define === 'function' && define.amd) {
   define([], configurator);
 } else if (typeof exports === 'object') {
   module.exports = configurator;
-} else {
+}else{
   root.configurator = configurator;
 }
 

@@ -1,3 +1,7 @@
+/**
+ * @param parent
+ * @constructor
+ */
 function NodeChildren(parent) {
   this.objectNode = function (name) {
     return new ObjectNode(name, null, parent);
@@ -17,6 +21,10 @@ function NodeChildren(parent) {
 
   this.numberNode = function (name) {
     return new NumberNode(name, null, parent);
+  };
+
+  this.mixedNode = function (name) {
+    return new MixedNode(name, null, parent);
   };
 
   this.end = function () {

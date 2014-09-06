@@ -14,5 +14,9 @@ results/
 *.pid
 *.gz
 
-/.idea/
-/demo/
+.coveralls.yml
+
+.idea/
+demo/
+build/
+coverage/
