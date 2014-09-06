@@ -134,5 +134,32 @@ function sharedAssertSpecHelper() {
         }).toThrowError(/Expect value not to be blank/);
       });
     });
+
+    describe('count', function () {
+      it('should pass if the count is between min and max', function () {
+        expect(function () {
+          config.set({
+            property1: 5,
+            arrayCount: ['asd', 'asd']
+          });
+        }).not.toThrow();
+      });
+
+      it('should throw a error when the count is not between min and max', function () {
+        expect(function () {
+          config.set({
+            property1: 5,
+            arrayCount: []
+          });
+        }).toThrowError(/Expected array to contain 1 or more values/);
+
+        expect(function () {
+          config.set({
+            property1: 5,
+            arrayCount: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+          });
+        }).toThrowError(/Expected array to contain 10 or less values/);
+      });
+    });
   });
 }

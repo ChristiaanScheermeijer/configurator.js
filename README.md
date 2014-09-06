@@ -12,7 +12,7 @@ Easily create config tree validators to define your expected config object and d
 
 ### Bower
 
-To install configurator.js with Bower use the following command.
+Run the following command to install configurator.js with Bower.
 
 ```bash
 $ bower install configurator.js
@@ -20,14 +20,17 @@ $ bower install configurator.js
 
 ## Usage
 
-There are two ways of creating a config tree. I differentiate them by calling them the `argument` or `method` way.
+There are two ways of creating a config tree. I differentiate that by the `argument` or `method` way.
+Both methods will return the same result.
 
 ### Argument tree builder
 
-The argument tree builder uses `Node` instances. The first argument is the name of the property and the second is the
-children array. Only `Array`, `Object` and `Mixed` nodes are allowed to have children.
+The argument tree builder uses `Node` instances for each property. The first argument of each `Node` is the name of the
+property and the second is the children array. Only `Array`, `Object` and `Mixed` nodes are allowed to have children.
 
 The assertions are exposed as methods for each `Node`.
+
+Start the configurator by calling the global `configurator` function and pass a array of children.
 
 ```js
 var config = configurator([
@@ -47,6 +50,24 @@ var config = configurator([
     new configurator.BooleanNode('all')
   ])
 ]);
+```
+
+The object will look like (example values):
+
+```js
+var plainConfig = {
+  property1: 5,
+  property2: "defaultString",
+  nested: {
+    property1: false,
+    property2: "string"
+  },
+  collection: [{
+    property1: "A example string",
+    property2: "string"
+  }],
+  array: [true, false, true]
+};
 ```
 
 ### Method tree
@@ -120,9 +141,63 @@ To get the validated (and filled with defaults) config object use the `.get()` m
 var plainConfiguration = config.get();
 ```
 
+### Available Nodes and Asserts
+
+#### StringNode
+  - required()
+  - regex(expression)
+  - greaterThan(chars)
+  - lessThan(chars)
+  - choice(choices)
+  - notEmpty()
+
+#### NumberNode
+  - required()
+  - regex(expression)
+  - greaterThan(num)
+  - lessThan(num)
+  - choice(choices)
+
+#### BooleanNode
+  - required()
+  - regex(expression)
+
+#### ObjectNode
+  - required()
+  - regex(expression)
+
+#### ArrayNode
+  - required()
+  - regex(expression)
+  - count(min, max)
+
+#### MixedNode
+  - required()
+  - regex(expression)
+  - greaterThan(chars)
+  - lessThan(chars)
+  - choice(choices)
+  - notEmpty()
+
+### Single parameter validation
+
+It also possible to create a validator for a single parameter instead using a root object.
+
+```js
+var gender = new configurator.StringNode('root').choice(['male', 'female']);
+
+gender.set('male');
+gender.get(); // male
+
+gender.set('not a gender'); // throws AssertError
+```
+
 ## TODO
 
  - add more assertions
+ - add FunctionNode
+ - add option to not throw errors
+ - add option to not fail on a single error and continue validating (even set validated values?)
  - improve get logics or change it (maybe add property string) i.e. `.get('nested.property1')`
 
-comments or suggestions please send me a PM!
+comments and/or suggestions are welcome!

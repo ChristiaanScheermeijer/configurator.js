@@ -37,6 +37,10 @@ function methodConfigHelper() {
         .stringNode('gender').choice(['male', 'female']).end()
         .stringNode('country').notEmpty().end()
         .numberNode('subscribe').choice([0, 1]).end()
+        .mixedNode('mixedNodeWithAssert').greaterThan(0).lessThan(10).end()
+        .mixedNode('mixedNode').choice([true, 'string', 5]).end()
+        .mixedNode('mixedNodeNotEmpty').notEmpty().end()
+        .arrayNode('arrayCount').count(1, 10).end()
       .end();
   });
 
@@ -70,7 +74,11 @@ function argConfigHelper() {
       new configurator.StringNode('email').regex(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i),
       new configurator.StringNode('gender').choice(['male', 'female']),
       new configurator.StringNode('country').notEmpty(),
-      new configurator.NumberNode('subscribe').choice([0, 1])
+      new configurator.NumberNode('subscribe').choice([0, 1]),
+      new configurator.MixedNode('mixedNodeWithAssert').greaterThan(0).lessThan(10),
+      new configurator.MixedNode('mixedNode').choice([true, 'string', 5]),
+      new configurator.MixedNode('mixedNodeNotEmpty').notEmpty(),
+      new configurator.ArrayNode('arrayCount').count(1, 10)
     ]);
   });
 
