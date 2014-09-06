@@ -1,7 +1,7 @@
 {
   "name": "configurator.js",
   "main": "dist/configurator.min.js",
-  "version": "0.0.1a",
+  "version": "0.0.2a",
   "description": "A config tree builder for Javascript",
   "repository": {
     "type": "git",
