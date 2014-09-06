@@ -18,6 +18,16 @@ function NumberNode(name, children, parent) {
     this.asserts.push(new LessThanAssert(num));
     return this;
   };
+
+  this.regex = function (regex, expected) {
+    this.asserts.push(new RegexAssert(regex, expected));
+    return this;
+  };
+
+  this.choice = function (choices) {
+    this.asserts.push(new ChoiceAssert(choices));
+    return this;
+  };
 }
 
 NumberNode.prototype = Object.create(Node.prototype);

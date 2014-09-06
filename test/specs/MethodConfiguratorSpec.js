@@ -14,4 +14,11 @@ describe('MethodConfigSpec', function () {
   sharedCollectionSpecHelper();
   sharedArraySpecHelper();
   sharedAssertSpecHelper();
+
+  describe('not shared', function() {
+    it('should be able to call end() many times but should stop at root node', function() {
+      var aLotOfEnds = config.end().end().end();
+      expect(aLotOfEnds).toBe(config);
+    });
+  });
 });

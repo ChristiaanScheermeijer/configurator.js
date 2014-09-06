@@ -30,10 +30,26 @@ function LessThanAssert(lessThan) {
 
 function RegexAssert(expression, expect) {
   var regex = new RegExp(expression);
-  var regexResult = expect || false;
+  var regexResult = expect || true;
   this.test = function (node, value) {
     if (regex.test(value) !== regexResult) {
-      throw new Error('Expected ');
+      throw new AssertError(node, 'RegexAssert', 'Expected value to match regex `' + regex.toString() + '`');
+    }
+  };
+}
+
+function ChoiceAssert(choices) {
+  this.test = function (node, value) {
+    if (choices && -1 === choices.indexOf(value)) {
+      throw new AssertError(node, 'ChoiceAssert', 'Given value is not a valid choise, choose from [' + choices.join(',') + ']');
+    }
+  };
+}
+
+function NotEmptyAssert() {
+  this.test = function (node, value) {
+    if ('' === value) {
+      throw new AssertError(node, 'NotEmptyAssert', 'Expect value not to be blank');
     }
   };
 }

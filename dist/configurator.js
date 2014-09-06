@@ -21,6 +21,18 @@ function AssertError(node, assert, message) {
 
 AssertError.prototype = Object.create(Error.prototype);
 
+function CountAssert(min, max) {
+  this.test = function (node, value) {
+    if (typeof min === 'number' && value.length < min) {
+      throw new AssertError(node, 'CountAssert', 'Expected array to contain `' + min + '` or more values');
+    }
+
+    if (typeof max === 'number' && value.length > max) {
+      throw new AssertError(node, 'CountAssert', 'Expected array to contain `' + max + '` or less values');
+    }
+  };
+}
+
 function GreaterThanAssert(greaterThan) {
   this.args = Array.prototype.slice.call(arguments, 0);
   this.test = function (node, value) {
@@ -53,10 +65,26 @@ function LessThanAssert(lessThan) {
 
 function RegexAssert(expression, expect) {
   var regex = new RegExp(expression);
-  var regexResult = expect || false;
+  var regexResult = expect || true;
   this.test = function (node, value) {
     if (regex.test(value) !== regexResult) {
-      throw new Error('Expected ');
+      throw new AssertError(node, 'RegexAssert', 'Expected value to match regex `' + regex.toString() + '`');
+    }
+  };
+}
+
+function ChoiceAssert(choices) {
+  this.test = function (node, value) {
+    if (choices && -1 === choices.indexOf(value)) {
+      throw new AssertError(node, 'ChoiceAssert', 'Given value is not a valid choise, choose from [' + choices.join(',') + ']');
+    }
+  };
+}
+
+function NotEmptyAssert() {
+  this.test = function (node, value) {
+    if ('' === value) {
+      throw new AssertError(node, 'NotEmptyAssert', 'Expect value not to be blank');
     }
   };
 }
@@ -256,6 +284,11 @@ Node.prototype.children = function () {
  */
 function ArrayNode(name, children, parent) {
   Node.apply(this, [name, new ArrayAssert(), children, parent, true]);
+
+  this.count = function (min, max) {
+    this.asserts.push(new CountAssert(min, max));
+    return this;
+  };
 }
 
 ArrayNode.prototype = Object.create(Node.prototype);
@@ -284,6 +317,31 @@ BooleanNode.prototype = Object.create(Node.prototype);
  */
 function MixedNode(name, children, parent) {
   Node.apply(this, [name, null, children, parent, true]);
+
+  this.greaterThan = function (num) {
+    this.asserts.push(new GreaterThanAssert(num));
+    return this;
+  };
+
+  this.lessThan = function (num) {
+    this.asserts.push(new LessThanAssert(num));
+    return this;
+  };
+
+  this.regex = function (regex, expected) {
+    this.asserts.push(new RegexAssert(regex, expected));
+    return this;
+  };
+
+  this.choice = function (choices) {
+    this.asserts.push(new ChoiceAssert(choices));
+    return this;
+  };
+
+  this.notEmpty = function () {
+    this.asserts.push(new NotEmptyAssert());
+    return this;
+  };
 }
 
 MixedNode.prototype = Object.create(Node.prototype);
@@ -342,6 +400,16 @@ function NumberNode(name, children, parent) {
     this.asserts.push(new LessThanAssert(num));
     return this;
   };
+
+  this.regex = function (regex, expected) {
+    this.asserts.push(new RegexAssert(regex, expected));
+    return this;
+  };
+
+  this.choice = function (choices) {
+    this.asserts.push(new ChoiceAssert(choices));
+    return this;
+  };
 }
 
 NumberNode.prototype = Object.create(Node.prototype);
@@ -380,6 +448,21 @@ function StringNode(name, children, parent) {
     this.asserts.push(new LessThanAssert(num));
     return this;
   };
+
+  this.regex = function (regex, expected) {
+    this.asserts.push(new RegexAssert(regex, expected));
+    return this;
+  };
+
+  this.choice = function (choices) {
+    this.asserts.push(new ChoiceAssert(choices));
+    return this;
+  };
+
+  this.notEmpty = function () {
+    this.asserts.push(new NotEmptyAssert());
+    return this;
+  };
 }
 
 StringNode.prototype = Object.create(Node.prototype);
@@ -409,7 +492,7 @@ if (typeof define === 'function' && define.amd) {
   define([], configurator);
 } else if (typeof exports === 'object') {
   module.exports = configurator;
-} else {
+}else{
   root.configurator = configurator;
 }
 

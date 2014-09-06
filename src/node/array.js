@@ -8,6 +8,11 @@
  */
 function ArrayNode(name, children, parent) {
   Node.apply(this, [name, new ArrayAssert(), children, parent, true]);
+
+  this.count = function (min, max) {
+    this.asserts.push(new CountAssert(min, max));
+    return this;
+  };
 }
 
 ArrayNode.prototype = Object.create(Node.prototype);
