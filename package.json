@@ -1,14 +1,14 @@
 {
   "name": "configurator.js",
-  "main": "dist/configurator.min.js",
+  "main": "dist/configurator.js",
   "version": "0.0.2a",
   "description": "A config tree builder for Javascript",
   "repository": {
     "type": "git",
     "url": "git://github.com/ChristiaanScheermeijer/configurator.js.git"
   },
-  "keywords": [],
-  "author": "Christiaan Scheermeijer",
+  "keywords": ["configuration", "config", "configuration tree", "asserts", "validation"],
+  "author": "Christiaan Scheermeijer <christiaan@videodock.com>",
   "license": "MIT",
   "readmeFilename": "README.md",
   "scripts": {
