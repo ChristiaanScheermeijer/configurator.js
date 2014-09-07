@@ -44,3 +44,12 @@ function ArrayAssert() {
     return true;
   };
 }
+
+function FunctionAssert() {
+  this.test = function (node, value) {
+    if (typeof value !== 'function') {
+      throw new AssertError(node, 'Function', 'type mismatch expected `function` got `' + typeof value + '`');
+    }
+    return true;
+  };
+}

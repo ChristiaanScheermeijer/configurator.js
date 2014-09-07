@@ -18,3 +18,4 @@ configurator.BooleanNode = BooleanNode;
 configurator.ArrayNode = ArrayNode;
 configurator.ObjectNode = ObjectNode;
 configurator.MixedNode = MixedNode;
+configurator.FunctionNode = FunctionNode;

@@ -179,6 +179,10 @@ var plainConfiguration = config.get();
   - choice(choices)
   - notEmpty()
 
+#### FunctionNode
+  - required()
+  - regex(expression)
+
 ### Single parameter validation
 
 It also possible to create a validator for a single parameter instead using a root object.
@@ -192,10 +196,26 @@ gender.get(); // male
 gender.set('not a gender'); // throws AssertError
 ```
 
+## Changelog
+
+### Dev
+
+  - added FunctionNode
+
+### 0.0.2a
+
+  - added MixedNode
+  - added ChoiceAssert
+  - added NotEmptyAssert
+  - added CountAssert
+
+### 0.0.1a
+
+  - initial commit
+
 ## TODO
 
  - add more assertions
- - add FunctionNode
  - add option to not throw errors
  - add option to not fail on a single error and continue validating (even set validated values?)
  - improve get logics or change it (maybe add property string) i.e. `.get('nested.property1')`
