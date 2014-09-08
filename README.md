@@ -1,6 +1,6 @@
 # configurator.js
 
-![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg) [![Coverage Status](https://img.shields.io/coveralls/ChristiaanScheermeijer/configurator.js.svg)](https://coveralls.io/r/ChristiaanScheermeijer/configurator.js?branch=development)
+![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg) [![Coverage Status](https://img.shields.io/coveralls/ChristiaanScheermeijer/configurator.js.svg)](https://coveralls.io/r/ChristiaanScheermeijer/configurator.js?branch=development) [![NPM version](https://badge.fury.io/js/configurator.js.svg)](http://badge.fury.io/js/configurator.js) [![Bower version](https://badge.fury.io/bo/configurator.js.svg)](http://badge.fury.io/bo/configurator.js)
 
 A config tree builder for Javascript
 
