@@ -12,16 +12,38 @@ Easily create config tree validators to define your expected config object and d
 
 ### Bower
 
-Run the following command to install configurator.js with Bower.
+To install configurator.js with Bower run:
 
 ```bash
 $ bower install configurator.js
+```
+
+### NPM
+
+To install configurator.js with NPM run:
+
+```bash
+$ npm install configurator.js
 ```
 
 ## Usage
 
 There are two ways of creating a config tree. I differentiate that by the `argument` or `method` way.
 Both methods will return the same result.
+
+### But first include
+
+#### HTML/Javascript
+
+```html
+<script type="text/javascript" src="components/configurator.js/dist/configurator.min.js"></script>
+```
+
+#### NodeJS
+
+```js
+var configurator = require('configurator.js');
+```
 
 ### Argument tree builder
 
@@ -201,6 +223,8 @@ gender.set('not a gender'); // throws AssertError
 ### Dev
 
   - added FunctionNode
+  - added to NPM registry
+  - updated README
 
 ### 0.0.2a
 
