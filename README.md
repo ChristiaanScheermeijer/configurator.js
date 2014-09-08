@@ -1,6 +1,6 @@
 # configurator.js
 
-![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg) [![Coverage Status](https://img.shields.io/coveralls/ChristiaanScheermeijer/configurator.js.svg)](https://coveralls.io/r/ChristiaanScheermeijer/configurator.js?branch=development)
+![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg) [![Coverage Status](https://img.shields.io/coveralls/ChristiaanScheermeijer/configurator.js.svg)](https://coveralls.io/r/ChristiaanScheermeijer/configurator.js?branch=development) [![NPM version](https://badge.fury.io/js/configurator.js.svg)](http://badge.fury.io/js/configurator.js) [![Bower version](https://badge.fury.io/bo/configurator.js.svg)](http://badge.fury.io/bo/configurator.js)
 
 A config tree builder for Javascript
 
@@ -12,16 +12,38 @@ Easily create config tree validators to define your expected config object and d
 
 ### Bower
 
-Run the following command to install configurator.js with Bower.
+To install configurator.js with Bower run:
 
 ```bash
 $ bower install configurator.js
+```
+
+### NPM
+
+To install configurator.js with NPM run:
+
+```bash
+$ npm install configurator.js
 ```
 
 ## Usage
 
 There are two ways of creating a config tree. I differentiate that by the `argument` or `method` way.
 Both methods will return the same result.
+
+### But first include
+
+#### HTML/Javascript
+
+```html
+<script type="text/javascript" src="components/configurator.js/dist/configurator.min.js"></script>
+```
+
+#### NodeJS
+
+```js
+var configurator = require('configurator.js');
+```
 
 ### Argument tree builder
 
@@ -179,6 +201,10 @@ var plainConfiguration = config.get();
   - choice(choices)
   - notEmpty()
 
+#### FunctionNode
+  - required()
+  - regex(expression)
+
 ### Single parameter validation
 
 It also possible to create a validator for a single parameter instead using a root object.
@@ -192,10 +218,28 @@ gender.get(); // male
 gender.set('not a gender'); // throws AssertError
 ```
 
+## Changelog
+
+### Dev
+
+  - added FunctionNode
+  - added to NPM registry
+  - updated README
+
+### 0.0.2a
+
+  - added MixedNode
+  - added ChoiceAssert
+  - added NotEmptyAssert
+  - added CountAssert
+
+### 0.0.1a
+
+  - initial commit
+
 ## TODO
 
  - add more assertions
- - add FunctionNode
  - add option to not throw errors
  - add option to not fail on a single error and continue validating (even set validated values?)
  - improve get logics or change it (maybe add property string) i.e. `.get('nested.property1')`

@@ -24,11 +24,11 @@ AssertError.prototype = Object.create(Error.prototype);
 function CountAssert(min, max) {
   this.test = function (node, value) {
     if (typeof min === 'number' && value.length < min) {
-      throw new AssertError(node, 'CountAssert', 'Expected array to contain `' + min + '` or more values');
+      throw new AssertError(node, 'CountAssert', 'Expected array to contain ' + min + ' or more values');
     }
 
     if (typeof max === 'number' && value.length > max) {
-      throw new AssertError(node, 'CountAssert', 'Expected array to contain `' + max + '` or less values');
+      throw new AssertError(node, 'CountAssert', 'Expected array to contain ' + max + ' or less values');
     }
   };
 }
@@ -131,6 +131,15 @@ function ArrayAssert() {
     var gotType = Object.prototype.toString.call(value);
     if ('[object Array]' !== gotType) {
       throw new AssertError(node, 'Array', 'type mismatch expected `[object Array]` got `' + gotType + '`');
+    }
+    return true;
+  };
+}
+
+function FunctionAssert() {
+  this.test = function (node, value) {
+    if (typeof value !== 'function') {
+      throw new AssertError(node, 'Function', 'type mismatch expected `function` got `' + typeof value + '`');
     }
     return true;
   };
@@ -316,6 +325,20 @@ BooleanNode.prototype = Object.create(Node.prototype);
  * @implements Node
  * @constructor
  */
+function FunctionNode(name, children, parent) {
+  Node.apply(this, [name, new FunctionAssert(), children, parent, false]);
+}
+
+FunctionNode.prototype = Object.create(Node.prototype);
+
+/**
+ * @param name
+ * @param [children]
+ * @param [parent]
+ *
+ * @implements Node
+ * @constructor
+ */
 function MixedNode(name, children, parent) {
   Node.apply(this, [name, null, children, parent, true]);
 
@@ -369,6 +392,10 @@ function NodeChildren(parent) {
 
   this.mixedNode = function (name) {
     return new MixedNode(name, null, parent);
+  };
+
+  this.functionNode = function (name) {
+    return new FunctionNode(name, null, parent);
   };
 
   this.end = function () {
@@ -473,6 +500,7 @@ configurator.BooleanNode = BooleanNode;
 configurator.ArrayNode = ArrayNode;
 configurator.ObjectNode = ObjectNode;
 configurator.MixedNode = MixedNode;
+configurator.FunctionNode = FunctionNode;
 
 if (typeof define === 'function' && define.amd) {
   define([], configurator);

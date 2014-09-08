@@ -27,6 +27,10 @@ function NodeChildren(parent) {
     return new MixedNode(name, null, parent);
   };
 
+  this.functionNode = function (name) {
+    return new FunctionNode(name, null, parent);
+  };
+
   this.end = function () {
     return parent;
   };

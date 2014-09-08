@@ -95,7 +95,7 @@ function sharedPropertiesSpecHelper() {
 
       expect(function () {
         config.set({
-          property1:             5,
+          property1:         5,
           mixedWithChildren: {
             key1: 'string',
             key2: 'string'
@@ -105,20 +105,37 @@ function sharedPropertiesSpecHelper() {
 
       expect(function () {
         config.set({
-          property1:             5,
+          property1:         5,
           mixedWithChildren: [true, 'anotherstring']
         });
       }).toThrowError(/type mismatch expected `string` got `boolean`/);
 
       expect(function () {
         config.set({
-          property1:             5,
+          property1:         5,
           mixedWithChildren: {
             key1: true,
             key2: 'string'
           }
         });
       }).toThrowError(/type mismatch expected `string` got `boolean`/);
+    });
+
+    it('should validate a function nodes', function () {
+      expect(function () {
+        config.set({
+          property1: 5,
+          callback:  function () {
+          }
+        });
+      }).not.toThrow();
+
+      expect(function () {
+        config.set({
+          property1: 5,
+          callback:  'string'
+        });
+      }).toThrowError(/type mismatch expected `function` got `string`/);
     });
   });
 }

@@ -41,6 +41,7 @@ function methodConfigHelper() {
         .mixedNode('mixedNode').choice([true, 'string', 5]).end()
         .mixedNode('mixedNodeNotEmpty').notEmpty().end()
         .arrayNode('arrayCount').count(1, 10).end()
+        .functionNode('callback').end()
       .end();
   });
 
@@ -78,7 +79,8 @@ function argConfigHelper() {
       new configurator.MixedNode('mixedNodeWithAssert').greaterThan(0).lessThan(10),
       new configurator.MixedNode('mixedNode').choice([true, 'string', 5]),
       new configurator.MixedNode('mixedNodeNotEmpty').notEmpty(),
-      new configurator.ArrayNode('arrayCount').count(1, 10)
+      new configurator.ArrayNode('arrayCount').count(1, 10),
+      new configurator.FunctionNode('callback')
     ]);
   });
 
