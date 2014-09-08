@@ -1,6 +1,6 @@
 {
   "name":         "configurator.js",
-  "version":      "0.0.2a",
+  "version":      "0.1.0",
   "main":         "dist/configurator.min.js",
   "ignore":       [
     "**/.*",
