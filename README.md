@@ -223,6 +223,7 @@ gender.set('not a gender'); // throws AssertError
 ### dev
 
   - fixed issue #1
+  - fixed issue #2
 
 ### 0.1.0
 

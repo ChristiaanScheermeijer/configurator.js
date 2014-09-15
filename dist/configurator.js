@@ -503,10 +503,12 @@ configurator.MixedNode = MixedNode;
 configurator.FunctionNode = FunctionNode;
 
 if (typeof define === 'function' && define.amd) {
-  define([], configurator);
+  define([], function () {
+    return configurator;
+  });
 } else if (typeof exports === 'object') {
-  module.exports = configurator;
-}else{
+  module.exports =  configurator;
+} else {
   root.configurator = configurator;
 }
 
