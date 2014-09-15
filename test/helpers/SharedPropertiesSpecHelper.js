@@ -67,22 +67,28 @@ function sharedPropertiesSpecHelper() {
         config.set({
           property1: 5,
           mixedNode: true
-        })
+        });
       }).not.toThrow();
+
+      expect(config.get().mixedNode).toBe(true);
 
       expect(function () {
         config.set({
           property1: 5,
           mixedNode: 5
-        })
+        });
       }).not.toThrow();
+
+      expect(config.get().mixedNode).toBe(5);
 
       expect(function () {
         config.set({
           property1: 5,
           mixedNode: 'string'
-        })
+        });
       }).not.toThrow();
+
+      expect(config.get().mixedNode).toBe('string');
     });
 
     it('should allow and validate mixed node children', function () {

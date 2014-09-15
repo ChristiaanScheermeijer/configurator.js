@@ -228,36 +228,36 @@ Node.prototype.validate = function (value) {
     this.asserts[i].test(this, value);
   }
 
-  if (true === this.allowChildNodes) {
-    // validate ArrayNodes
-    if ('[object Array]' === Object.prototype.toString.call(value)) {
-      validatedVal = [];
-      if (this.childNodes && this.childNodes.all) {
-        for (i = 0; i < value.length; i++) {
-          // validate same validator for all Array children
-          validatedVal[i] = this.childNodes.all.set(value[i]);
-        }
-      } else {
-        for (index in this.childNodes) {
-          // validate each value
-          validatedVal[index] = this.childNodes[index].set(value[index]);
-        }
+  if (true === this.allowChildNodes && '[object Array]' === Object.prototype.toString.call(value)) {
+    // validate ArrayNode or MixedNode
+    validatedVal = [];
+    if (this.childNodes && this.childNodes.all) {
+      for (i = 0; i < value.length; i++) {
+        // validate same validator for all Array children
+        validatedVal[i] = this.childNodes.all.set(value[i]);
       }
-    } else if ('[object Object]' === Object.prototype.toString.call(value)) {
-      validatedVal = {};
+    } else {
+      for (index in this.childNodes) {
+        // validate each value
+        validatedVal[index] = this.childNodes[index].set(value[index]);
+      }
+    }
+  } else if (true === this.allowChildNodes && '[object Object]' === Object.prototype.toString.call(value)) {
+    // validate ObjectNode or MixedNode
+    validatedVal = {};
 
-      if (this.childNodes && this.childNodes.all) {
-        for (index in value) {
-          // validate same validator for all Object children
-          validatedVal[index] = this.childNodes.all.set(value[index]);
-        }
-      } else {
-        for (index in this.childNodes) {
-          validatedVal[index] = this.childNodes[index].set(value[index]);
-        }
+    if (this.childNodes && this.childNodes.all) {
+      for (index in value) {
+        // validate same validator for all Object children
+        validatedVal[index] = this.childNodes.all.set(value[index]);
+      }
+    } else {
+      for (index in this.childNodes) {
+        validatedVal[index] = this.childNodes[index].set(value[index]);
       }
     }
   } else {
+    // validate StringNode, NumberNode, BooleanNode or MixedNode
     validatedVal = value;
   }
 
