@@ -7,7 +7,7 @@
  * @constructor
  */
 function NumberNode(name, children, parent) {
-  Node.apply(this, [name, new NumberAssert(), children, parent, false]);
+  Node.apply(this, [name, new NumberTypeAssert(), children, parent, false]);
 
   this.greaterThan = function (num) {
     this.asserts.push(new GreaterThanAssert(num));

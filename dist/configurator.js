@@ -138,7 +138,7 @@ function NotEmptyAssert() {
   };
 }
 
-function StringAssert() {
+function StringTypeAssert() {
   this.test = function (node, value) {
     if (false === utils.isString(value)) {
       throw new AssertError(node, 'String', 'type mismatch expected `[object String]` got `' + utils.callToString(value) + '`');
@@ -147,7 +147,7 @@ function StringAssert() {
   };
 }
 
-function NumberAssert() {
+function NumberTypeAssert() {
   this.test = function (node, value) {
     if (false === utils.isNumber(value)) {
       throw new AssertError(node, 'Number', 'type mismatch expected `[object Number]` got `' + utils.callToString(value) + '`');
@@ -156,7 +156,7 @@ function NumberAssert() {
   };
 }
 
-function BooleanAssert() {
+function BooleanTypeAssert() {
   this.test = function (node, value) {
     if (false === utils.isBoolean(value)) {
       throw new AssertError(node, 'Boolean', 'type mismatch expected `[object Boolean]` got `' + utils.callToString(value) + '`');
@@ -165,7 +165,7 @@ function BooleanAssert() {
   };
 }
 
-function ObjectAssert() {
+function ObjectTypeAssert() {
   this.test = function (node, value) {
     if (false === utils.isObject(value)) {
       throw new AssertError(node, 'Object', 'type mismatch expected `[object Object]` got `' + utils.callToString(value) + '`');
@@ -174,7 +174,7 @@ function ObjectAssert() {
   };
 }
 
-function ArrayAssert() {
+function ArrayTypeAssert() {
   this.test = function (node, value) {
     if (false === utils.isArray(value)) {
       throw new AssertError(node, 'Array', 'type mismatch expected `[object Array]` got `' + utils.callToString(value) + '`');
@@ -183,10 +183,19 @@ function ArrayAssert() {
   };
 }
 
-function FunctionAssert() {
+function FunctionTypeAssert() {
   this.test = function (node, value) {
     if (false === utils.isFunction(value)) {
       throw new AssertError(node, 'Function', 'type mismatch expected `[object Function]` got `' + utils.callToString(value) + '`');
+    }
+    return true;
+  };
+}
+
+function RegexTypeAssert() {
+  this.test = function (node, value) {
+    if (false === utils.isRegexp(value)) {
+      throw new AssertError(node, 'Regex', 'type mismatch expected `[object Regexp]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
@@ -340,7 +349,7 @@ Node.prototype.children = function () {
  * @constructor
  */
 function ArrayNode(name, children, parent) {
-  Node.apply(this, [name, new ArrayAssert(), children, parent, true]);
+  Node.apply(this, [name, new ArrayTypeAssert(), children, parent, true]);
 
   this.count = function (min, max) {
     this.asserts.push(new CountAssert(min, max));
@@ -359,7 +368,7 @@ ArrayNode.prototype = Object.create(Node.prototype);
  * @constructor
  */
 function BooleanNode(name, children, parent) {
-  Node.apply(this, [name, new BooleanAssert(), children, parent, false]);
+  Node.apply(this, [name, new BooleanTypeAssert(), children, parent, false]);
 }
 
 BooleanNode.prototype = Object.create(Node.prototype);
@@ -373,7 +382,7 @@ BooleanNode.prototype = Object.create(Node.prototype);
  * @constructor
  */
 function FunctionNode(name, children, parent) {
-  Node.apply(this, [name, new FunctionAssert(), children, parent, false]);
+  Node.apply(this, [name, new FunctionTypeAssert(), children, parent, false]);
 }
 
 FunctionNode.prototype = Object.create(Node.prototype);
@@ -445,6 +454,10 @@ function NodeChildren(parent) {
     return new FunctionNode(name, null, parent);
   };
 
+  this.regexNode = function (name) {
+    return new RegexNode(name, null, parent);
+  };
+
   this.end = function () {
     return parent;
   };
@@ -459,7 +472,7 @@ function NodeChildren(parent) {
  * @constructor
  */
 function NumberNode(name, children, parent) {
-  Node.apply(this, [name, new NumberAssert(), children, parent, false]);
+  Node.apply(this, [name, new NumberTypeAssert(), children, parent, false]);
 
   this.greaterThan = function (num) {
     this.asserts.push(new GreaterThanAssert(num));
@@ -488,7 +501,7 @@ NumberNode.prototype = Object.create(Node.prototype);
  * @constructor
  */
 function ObjectNode(name, children, parent) {
-  Node.apply(this, [name, new ObjectAssert(), children, parent, true]);
+  Node.apply(this, [name, new ObjectTypeAssert(), children, parent, true]);
 }
 
 ObjectNode.prototype = Object.create(Node.prototype);
@@ -501,8 +514,24 @@ ObjectNode.prototype = Object.create(Node.prototype);
  * @implements Node
  * @constructor
  */
+function RegexNode(name, children, parent) {
+  Node.apply(this, [name, new RegexTypeAssert(), children, parent, true]);
+
+  this.regex = null;
+}
+
+RegexNode.prototype = Object.create(Node.prototype);
+
+/**
+ * @param name
+ * @param [children]
+ * @param [parent]
+ *
+ * @implements Node
+ * @constructor
+ */
 function StringNode(name, children, parent) {
-  Node.apply(this, [name, new StringAssert(), children, parent, false]);
+  Node.apply(this, [name, new StringTypeAssert(), children, parent, false]);
 
   this.greaterThan = function (num) {
     this.asserts.push(new GreaterThanAssert(num));
@@ -548,6 +577,7 @@ configurator.ArrayNode = ArrayNode;
 configurator.ObjectNode = ObjectNode;
 configurator.MixedNode = MixedNode;
 configurator.FunctionNode = FunctionNode;
+configurator.RegexNode = RegexNode;
 
 if (typeof define === 'function' && define.amd) {
   define([], function () {

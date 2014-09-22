@@ -7,7 +7,7 @@
  * @constructor
  */
 function ArrayNode(name, children, parent) {
-  Node.apply(this, [name, new ArrayAssert(), children, parent, true]);
+  Node.apply(this, [name, new ArrayTypeAssert(), children, parent, true]);
 
   this.count = function (min, max) {
     this.asserts.push(new CountAssert(min, max));

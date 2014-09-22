@@ -111,5 +111,20 @@ function sharedNodeTypeSpecHelper() {
         }).not.toThrow();
       });
     });
+
+    describe('Regex', function () {
+      var regexNode = new configurator.RegexNode('test');
+      it('should not throw error when a regex is set', function () {
+        expect(function () {
+          regexNode.set(new RegExp("/regex/g"));
+        }).not.toThrow();
+      });
+
+      it('should throw error when a wrong value is set', function () {
+        expect(function () {
+          regexNode.set(false);
+        }).toThrowError(/type mismatch expected `\[object Regexp\]` got `\[object Boolean\]`/g);
+      });
+    });
   });
 }

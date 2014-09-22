@@ -205,6 +205,9 @@ var plainConfiguration = config.get();
   - required()
   - regex(expression)
 
+#### RegexNode
+  - required()
+
 ### Single parameter validation
 
 It also possible to create a validator for a single parameter instead using a root object.
@@ -224,6 +227,8 @@ gender.set('not a gender'); // throws AssertError
 
   - fixed issue #1
   - fixed issue #2
+  - added utils
+  - added RegexNode
 
 ### 0.1.0
 
