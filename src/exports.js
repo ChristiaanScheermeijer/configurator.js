@@ -3,7 +3,7 @@ if (typeof define === 'function' && define.amd) {
     return configurator;
   });
 } else if (typeof exports === 'object') {
-  module.exports =  configurator;
+  module.exports = configurator;
 } else {
   root.configurator = configurator;
 }

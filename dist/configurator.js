@@ -76,7 +76,7 @@ function RegexAssert(expression, expect) {
 function ChoiceAssert(choices) {
   this.test = function (node, value) {
     if (choices && -1 === choices.indexOf(value)) {
-      throw new AssertError(node, 'ChoiceAssert', 'Given value is not a valid choise, choose from [' + choices.join(',') + ']');
+      throw new AssertError(node, 'ChoiceAssert', 'Given value is not a valid choice, choose from [' + choices.join(',') + ']');
     }
   };
 }
@@ -507,7 +507,7 @@ if (typeof define === 'function' && define.amd) {
     return configurator;
   });
 } else if (typeof exports === 'object') {
-  module.exports =  configurator;
+  module.exports = configurator;
 } else {
   root.configurator = configurator;
 }

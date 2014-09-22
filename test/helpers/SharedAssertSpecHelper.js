@@ -104,14 +104,14 @@ function sharedAssertSpecHelper() {
             property1: 5,
             gender:    'notagender'
           });
-        }).toThrowError(/Given value is not a valid choise, choose from/);
+        }).toThrowError(/Given value is not a valid choice, choose from/);
 
         expect(function () {
           config.set({
             property1: 5,
             subscribe: 3
           });
-        }).toThrowError(/Given value is not a valid choise, choose from/);
+        }).toThrowError(/Given value is not a valid choice, choose from/);
       });
     });
 
