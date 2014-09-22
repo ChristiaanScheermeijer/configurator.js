@@ -1,7 +1,7 @@
 function StringAssert() {
   this.test = function (node, value) {
-    if (typeof value !== 'string') {
-      throw new AssertError(node, 'String', 'type mismatch expected `string` got `' + typeof value + '`');
+    if (false === utils.isString(value)) {
+      throw new AssertError(node, 'String', 'type mismatch expected `[object String]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
@@ -9,8 +9,8 @@ function StringAssert() {
 
 function NumberAssert() {
   this.test = function (node, value) {
-    if (typeof value !== 'number') {
-      throw new AssertError(node, 'Number', 'type mismatch expected `number` got `' + typeof value + '`');
+    if (false === utils.isNumber(value)) {
+      throw new AssertError(node, 'Number', 'type mismatch expected `[object Number]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
@@ -18,8 +18,8 @@ function NumberAssert() {
 
 function BooleanAssert() {
   this.test = function (node, value) {
-    if (typeof value !== 'boolean') {
-      throw new AssertError(node, 'Boolean', 'type mismatch expected `boolean` got `' + typeof value + '`');
+    if (false === utils.isBoolean(value)) {
+      throw new AssertError(node, 'Boolean', 'type mismatch expected `[object Boolean]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
@@ -27,9 +27,8 @@ function BooleanAssert() {
 
 function ObjectAssert() {
   this.test = function (node, value) {
-    var gotType = Object.prototype.toString.call(value);
-    if ('[object Object]' !== gotType) {
-      throw new AssertError(node, 'Object', 'type mismatch expected `[object Object]` got `' + gotType + '`');
+    if (false === utils.isObject(value)) {
+      throw new AssertError(node, 'Object', 'type mismatch expected `[object Object]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
@@ -37,9 +36,8 @@ function ObjectAssert() {
 
 function ArrayAssert() {
   this.test = function (node, value) {
-    var gotType = Object.prototype.toString.call(value);
-    if ('[object Array]' !== gotType) {
-      throw new AssertError(node, 'Array', 'type mismatch expected `[object Array]` got `' + gotType + '`');
+    if (false === utils.isArray(value)) {
+      throw new AssertError(node, 'Array', 'type mismatch expected `[object Array]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
@@ -47,8 +45,8 @@ function ArrayAssert() {
 
 function FunctionAssert() {
   this.test = function (node, value) {
-    if (typeof value !== 'function') {
-      throw new AssertError(node, 'Function', 'type mismatch expected `function` got `' + typeof value + '`');
+    if (false === utils.isFunction(value)) {
+      throw new AssertError(node, 'Function', 'type mismatch expected `[object Function]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };

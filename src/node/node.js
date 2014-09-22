@@ -13,7 +13,7 @@ function Node(name, assert, children, parent, allowChildNodes) {
   this.value = undefined;
 
   // for the argument tree builder
-  if (true === this.allowChildNodes && children && children.length > 0) {
+  if (true === this.allowChildNodes && true === utils.isArray(children) && children.length > 0) {
     for (var i = 0; i < children.length; i++) {
       children[i].parent = this;
       this.childNodes[children[i].name] = children[i];
@@ -81,7 +81,7 @@ Node.prototype.validate = function (value) {
     this.asserts[i].test(this, value);
   }
 
-  if (true === this.allowChildNodes && '[object Array]' === Object.prototype.toString.call(value)) {
+  if (true === this.allowChildNodes && true === utils.isArray(value)) {
     // validate ArrayNode or MixedNode
     validatedVal = [];
     if (this.childNodes && this.childNodes.all) {
@@ -95,7 +95,7 @@ Node.prototype.validate = function (value) {
         validatedVal[index] = this.childNodes[index].set(value[index]);
       }
     }
-  } else if (true === this.allowChildNodes && '[object Object]' === Object.prototype.toString.call(value)) {
+  } else if (true === this.allowChildNodes && true === utils.isObject(value)) {
     // validate ObjectNode or MixedNode
     validatedVal = {};
 
@@ -133,6 +133,6 @@ Node.prototype.children = function () {
     }
     return this.nodeChildren;
   } else {
-    throw new Error('Node ' + this.name + ' cannot carry any children, only `Object` and `Array` nodes do.');
+    throw new Error('Node ' + this.name + ' cannot carry any children, only `Object`, `Array` and `Mixed` nodes do.');
   }
 };
