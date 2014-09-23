@@ -1,6 +1,6 @@
 # configurator.js
 
-![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg) [![Coverage Status](https://img.shields.io/coveralls/ChristiaanScheermeijer/configurator.js.svg)](https://coveralls.io/r/ChristiaanScheermeijer/configurator.js?branch=development) [![NPM version](https://badge.fury.io/js/configurator.js.svg)](http://badge.fury.io/js/configurator.js) [![Bower version](https://badge.fury.io/bo/configurator.js.svg)](http://badge.fury.io/bo/configurator.js)
+![Build status](https://travis-ci.org/ChristiaanScheermeijer/configurator.js.svg) [![Coverage Status](https://img.shields.io/coveralls/ChristiaanScheermeijer/configurator.js.svg)](https://coveralls.io/r/ChristiaanScheermeijer/configurator.js?branch=master) [![NPM version](https://badge.fury.io/js/configurator.js.svg)](http://badge.fury.io/js/configurator.js) [![Bower version](https://badge.fury.io/bo/configurator.js.svg)](http://badge.fury.io/bo/configurator.js)
 
 A config tree builder for Javascript
 
@@ -182,15 +182,12 @@ var plainConfiguration = config.get();
 
 #### BooleanNode
   - required()
-  - regex(expression)
 
 #### ObjectNode
   - required()
-  - regex(expression)
 
 #### ArrayNode
   - required()
-  - regex(expression)
   - count(min, max)
 
 #### MixedNode
@@ -203,7 +200,9 @@ var plainConfiguration = config.get();
 
 #### FunctionNode
   - required()
-  - regex(expression)
+
+#### RegexNode
+  - required()
 
 ### Single parameter validation
 
@@ -220,7 +219,16 @@ gender.set('not a gender'); // throws AssertError
 
 ## Changelog
 
-### Dev
+### dev
+
+  - fixed issue #1
+  - fixed issue #2
+  - regex assert only for String, Number and Mixed nodes
+  - added utils
+  - added RegexNode
+  - added DateNode
+
+### 0.1.0
 
   - added FunctionNode
   - added to NPM registry

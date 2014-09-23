@@ -31,6 +31,14 @@ function NodeChildren(parent) {
     return new FunctionNode(name, null, parent);
   };
 
+  this.regexNode = function (name) {
+    return new RegexNode(name, null, parent);
+  };
+
+  this.dateNode = function (name) {
+    return new DateNode(name, null, parent);
+  };
+
   this.end = function () {
     return parent;
   };

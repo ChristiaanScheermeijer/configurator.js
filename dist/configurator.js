@@ -3,6 +3,46 @@
   'use strict';
 
 
+var utils = {};
+
+function toString(value) {
+  return Object.prototype.toString.call(value);
+}
+
+utils.callToString = toString;
+
+utils.isString = function (value) {
+  return (typeof value === 'string' || toString(value) == '[object String]');
+};
+
+utils.isNumber = function (value) {
+  return (typeof value === 'number' || toString(value) == '[object Number]');
+};
+
+utils.isBoolean = function (value) {
+  return (typeof value === 'boolean' || toString(value) == '[object Boolean]');
+};
+
+utils.isFunction = function (value) {
+  return (typeof value === 'function' || toString(value) === '[object Function]');
+};
+
+utils.isObject = function (value) {
+  return toString(value) === '[object Object]';
+};
+
+utils.isArray = function (value) {
+  return toString(value) === '[object Array]';
+};
+
+utils.isRegexp = function (value) {
+  return toString(value) === '[object RegExp]';
+};
+
+utils.isDate = function (value) {
+  return toString(value) === '[object Date]';
+};
+
 /**
  * @param node
  * @param message
@@ -23,12 +63,14 @@ AssertError.prototype = Object.create(Error.prototype);
 
 function CountAssert(min, max) {
   this.test = function (node, value) {
-    if (typeof min === 'number' && value.length < min) {
-      throw new AssertError(node, 'CountAssert', 'Expected array to contain ' + min + ' or more values');
-    }
+    if (utils.isArray(value)) {
+      if (utils.isNumber(min) && value.length < min) {
+        throw new AssertError(node, 'CountAssert', 'Expected array to contain ' + min + ' or more values');
+      }
 
-    if (typeof max === 'number' && value.length > max) {
-      throw new AssertError(node, 'CountAssert', 'Expected array to contain ' + max + ' or less values');
+      if (utils.isNumber(max) && value.length > max) {
+        throw new AssertError(node, 'CountAssert', 'Expected array to contain ' + max + ' or less values');
+      }
     }
   };
 }
@@ -36,11 +78,12 @@ function CountAssert(min, max) {
 function GreaterThanAssert(greaterThan) {
   this.args = Array.prototype.slice.call(arguments, 0);
   this.test = function (node, value) {
-    if (typeof value === 'string' && value.length <= greaterThan) {
-      throw new AssertError(node, 'GreaterThanAssert', 'Expected value to contain ' + greaterThan + ' or more characters');
+    if (utils.isString(value) && value.length <= greaterThan) {
+      throw new AssertError(node, 'GreaterThanAssert',
+        'Expected value to contain ' + greaterThan + ' or more characters');
     }
 
-    if (typeof value === 'number' && value <= greaterThan) {
+    if (utils.isNumber(value) && value <= greaterThan) {
       throw new AssertError(node, 'GreaterThanAssert',
         'Expected value to be greater than ' + greaterThan + ' but is ' + value);
     }
@@ -51,11 +94,11 @@ function GreaterThanAssert(greaterThan) {
 
 function LessThanAssert(lessThan) {
   this.test = function (node, value) {
-    if (typeof value === 'string' && value.length >= lessThan) {
+    if (utils.isString(value) && value.length >= lessThan) {
       throw new AssertError(node, 'LessThanAssert', 'Expected value to contain ' + lessThan + ' or less characters');
     }
 
-    if (typeof value === 'number' && value >= lessThan) {
+    if (utils.isNumber(value) && value >= lessThan) {
       throw new AssertError(node, 'LessThanAssert', 'Expected value to be less than ' + lessThan + ' but is ' + value);
     }
 
@@ -64,19 +107,31 @@ function LessThanAssert(lessThan) {
 }
 
 function RegexAssert(expression, expect) {
-  var regex = new RegExp(expression);
+  var regex;
+  if (utils.isRegexp(expression)) {
+    regex = expression;
+  } else if (utils.isString(expression)) {
+    regex = new RegExp(expression);
+  }
   var regexResult = expect || true;
   this.test = function (node, value) {
-    if (regex.test(value) !== regexResult) {
-      throw new AssertError(node, 'RegexAssert', 'Expected value to match regex `' + regex.toString() + '`');
+    if (true === utils.isString(value) || true === utils.isNumber(value)) {
+      if (true === utils.isRegexp(regex)) {
+        if (regex.test(value) !== regexResult) {
+          throw new AssertError(node, 'RegexAssert', 'Expected value to match regex `' + regex.toString() + '`');
+        }
+      } else {
+        throw new AssertError(node, 'WrongRegexAssert', 'Regex not valid');
+      }
     }
   };
 }
 
 function ChoiceAssert(choices) {
   this.test = function (node, value) {
-    if (choices && -1 === choices.indexOf(value)) {
-      throw new AssertError(node, 'ChoiceAssert', 'Given value is not a valid choise, choose from [' + choices.join(',') + ']');
+    if (utils.isArray(choices) && -1 === choices.indexOf(value)) {
+      throw new AssertError(node, 'ChoiceAssert',
+        'Given value is not a valid choice, choose from [' + choices.join(',') + ']');
     }
   };
 }
@@ -89,57 +144,73 @@ function NotEmptyAssert() {
   };
 }
 
-function StringAssert() {
+function StringTypeAssert() {
   this.test = function (node, value) {
-    if (typeof value !== 'string') {
-      throw new AssertError(node, 'String', 'type mismatch expected `string` got `' + typeof value + '`');
+    if (false === utils.isString(value)) {
+      throw new AssertError(node, 'String', 'type mismatch expected `[object String]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
 }
 
-function NumberAssert() {
+function NumberTypeAssert() {
   this.test = function (node, value) {
-    if (typeof value !== 'number') {
-      throw new AssertError(node, 'Number', 'type mismatch expected `number` got `' + typeof value + '`');
+    if (false === utils.isNumber(value)) {
+      throw new AssertError(node, 'Number', 'type mismatch expected `[object Number]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
 }
 
-function BooleanAssert() {
+function BooleanTypeAssert() {
   this.test = function (node, value) {
-    if (typeof value !== 'boolean') {
-      throw new AssertError(node, 'Boolean', 'type mismatch expected `boolean` got `' + typeof value + '`');
+    if (false === utils.isBoolean(value)) {
+      throw new AssertError(node, 'Boolean', 'type mismatch expected `[object Boolean]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
 }
 
-function ObjectAssert() {
+function ObjectTypeAssert() {
   this.test = function (node, value) {
-    var gotType = Object.prototype.toString.call(value);
-    if ('[object Object]' !== gotType) {
-      throw new AssertError(node, 'Object', 'type mismatch expected `[object Object]` got `' + gotType + '`');
+    if (false === utils.isObject(value)) {
+      throw new AssertError(node, 'Object', 'type mismatch expected `[object Object]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
 }
 
-function ArrayAssert() {
+function ArrayTypeAssert() {
   this.test = function (node, value) {
-    var gotType = Object.prototype.toString.call(value);
-    if ('[object Array]' !== gotType) {
-      throw new AssertError(node, 'Array', 'type mismatch expected `[object Array]` got `' + gotType + '`');
+    if (false === utils.isArray(value)) {
+      throw new AssertError(node, 'Array', 'type mismatch expected `[object Array]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
 }
 
-function FunctionAssert() {
+function FunctionTypeAssert() {
   this.test = function (node, value) {
-    if (typeof value !== 'function') {
-      throw new AssertError(node, 'Function', 'type mismatch expected `function` got `' + typeof value + '`');
+    if (false === utils.isFunction(value)) {
+      throw new AssertError(node, 'Function', 'type mismatch expected `[object Function]` got `' + utils.callToString(value) + '`');
+    }
+    return true;
+  };
+}
+
+function RegexTypeAssert() {
+  this.test = function (node, value) {
+    if (false === utils.isRegexp(value)) {
+      throw new AssertError(node, 'Regex', 'type mismatch expected `[object Regexp]` got `' + utils.callToString(value) + '`');
+    }
+    return true;
+  };
+}
+
+function DateTypeAssert() {
+  this.test = function (node, value) {
+    if (false === utils.isDate(value)) {
+      throw new AssertError(node, 'Date', 'type mismatch expected `[object Date]` got `' + utils.callToString(value) + '`');
     }
     return true;
   };
@@ -160,7 +231,7 @@ function Node(name, assert, children, parent, allowChildNodes) {
   this.value = undefined;
 
   // for the argument tree builder
-  if (true === this.allowChildNodes && children && children.length > 0) {
+  if (true === this.allowChildNodes && true === utils.isArray(children) && children.length > 0) {
     for (var i = 0; i < children.length; i++) {
       children[i].parent = this;
       this.childNodes[children[i].name] = children[i];
@@ -189,11 +260,6 @@ Node.prototype.required = function () {
 
 Node.prototype.setDefault = function (val) {
   this.defaultValue = val;
-  return this;
-};
-
-Node.prototype.regex = function (expr, expects) {
-  this.asserts.push(new RegexAssert(expr, expects));
   return this;
 };
 
@@ -228,36 +294,36 @@ Node.prototype.validate = function (value) {
     this.asserts[i].test(this, value);
   }
 
-  if (true === this.allowChildNodes) {
-    // validate ArrayNodes
-    if ('[object Array]' === Object.prototype.toString.call(value)) {
-      validatedVal = [];
-      if (this.childNodes && this.childNodes.all) {
-        for (i = 0; i < value.length; i++) {
-          // validate same validator for all Array children
-          validatedVal[i] = this.childNodes.all.set(value[i]);
-        }
-      } else {
-        for (index in this.childNodes) {
-          // validate each value
-          validatedVal[index] = this.childNodes[index].set(value[index]);
-        }
+  if (true === this.allowChildNodes && true === utils.isArray(value)) {
+    // validate ArrayNode or MixedNode
+    validatedVal = [];
+    if (this.childNodes && this.childNodes.all) {
+      for (i = 0; i < value.length; i++) {
+        // validate same validator for all Array children
+        validatedVal[i] = this.childNodes.all.set(value[i]);
       }
-    } else if ('[object Object]' === Object.prototype.toString.call(value)) {
-      validatedVal = {};
+    } else {
+      for (index in this.childNodes) {
+        // validate each value
+        validatedVal[index] = this.childNodes[index].set(value[index]);
+      }
+    }
+  } else if (true === this.allowChildNodes && true === utils.isObject(value)) {
+    // validate ObjectNode or MixedNode
+    validatedVal = {};
 
-      if (this.childNodes && this.childNodes.all) {
-        for (index in value) {
-          // validate same validator for all Object children
-          validatedVal[index] = this.childNodes.all.set(value[index]);
-        }
-      } else {
-        for (index in this.childNodes) {
-          validatedVal[index] = this.childNodes[index].set(value[index]);
-        }
+    if (this.childNodes && this.childNodes.all) {
+      for (index in value) {
+        // validate same validator for all Object children
+        validatedVal[index] = this.childNodes.all.set(value[index]);
+      }
+    } else {
+      for (index in this.childNodes) {
+        validatedVal[index] = this.childNodes[index].set(value[index]);
       }
     }
   } else {
+    // validate StringNode, NumberNode, BooleanNode or MixedNode
     validatedVal = value;
   }
 
@@ -280,7 +346,7 @@ Node.prototype.children = function () {
     }
     return this.nodeChildren;
   } else {
-    throw new Error('Node ' + this.name + ' cannot carry any children, only `Object` and `Array` nodes do.');
+    throw new Error('Node ' + this.name + ' cannot carry any children, only `Object`, `Array` and `Mixed` nodes do.');
   }
 };
 
@@ -293,7 +359,7 @@ Node.prototype.children = function () {
  * @constructor
  */
 function ArrayNode(name, children, parent) {
-  Node.apply(this, [name, new ArrayAssert(), children, parent, true]);
+  Node.apply(this, [name, new ArrayTypeAssert(), children, parent, true]);
 
   this.count = function (min, max) {
     this.asserts.push(new CountAssert(min, max));
@@ -312,7 +378,7 @@ ArrayNode.prototype = Object.create(Node.prototype);
  * @constructor
  */
 function BooleanNode(name, children, parent) {
-  Node.apply(this, [name, new BooleanAssert(), children, parent, false]);
+  Node.apply(this, [name, new BooleanTypeAssert(), children, parent, false]);
 }
 
 BooleanNode.prototype = Object.create(Node.prototype);
@@ -325,8 +391,22 @@ BooleanNode.prototype = Object.create(Node.prototype);
  * @implements Node
  * @constructor
  */
+function DateNode(name, children, parent) {
+  Node.apply(this, [name, new DateTypeAssert(), children, parent, true]);
+}
+
+DateNode.prototype = Object.create(Node.prototype);
+
+/**
+ * @param name
+ * @param [children]
+ * @param [parent]
+ *
+ * @implements Node
+ * @constructor
+ */
 function FunctionNode(name, children, parent) {
-  Node.apply(this, [name, new FunctionAssert(), children, parent, false]);
+  Node.apply(this, [name, new FunctionTypeAssert(), children, parent, false]);
 }
 
 FunctionNode.prototype = Object.create(Node.prototype);
@@ -359,6 +439,11 @@ function MixedNode(name, children, parent) {
 
   this.notEmpty = function () {
     this.asserts.push(new NotEmptyAssert());
+    return this;
+  };
+
+  this.regex = function (expr, expects) {
+    this.asserts.push(new RegexAssert(expr, expects));
     return this;
   };
 }
@@ -398,6 +483,14 @@ function NodeChildren(parent) {
     return new FunctionNode(name, null, parent);
   };
 
+  this.regexNode = function (name) {
+    return new RegexNode(name, null, parent);
+  };
+
+  this.dateNode = function (name) {
+    return new DateNode(name, null, parent);
+  };
+
   this.end = function () {
     return parent;
   };
@@ -412,7 +505,7 @@ function NodeChildren(parent) {
  * @constructor
  */
 function NumberNode(name, children, parent) {
-  Node.apply(this, [name, new NumberAssert(), children, parent, false]);
+  Node.apply(this, [name, new NumberTypeAssert(), children, parent, false]);
 
   this.greaterThan = function (num) {
     this.asserts.push(new GreaterThanAssert(num));
@@ -428,6 +521,11 @@ function NumberNode(name, children, parent) {
     this.asserts.push(new ChoiceAssert(choices));
     return this;
   };
+
+  this.regex = function (expr, expects) {
+    this.asserts.push(new RegexAssert(expr, expects));
+    return this;
+  };
 }
 
 NumberNode.prototype = Object.create(Node.prototype);
@@ -441,7 +539,7 @@ NumberNode.prototype = Object.create(Node.prototype);
  * @constructor
  */
 function ObjectNode(name, children, parent) {
-  Node.apply(this, [name, new ObjectAssert(), children, parent, true]);
+  Node.apply(this, [name, new ObjectTypeAssert(), children, parent, true]);
 }
 
 ObjectNode.prototype = Object.create(Node.prototype);
@@ -454,8 +552,22 @@ ObjectNode.prototype = Object.create(Node.prototype);
  * @implements Node
  * @constructor
  */
+function RegexNode(name, children, parent) {
+  Node.apply(this, [name, new RegexTypeAssert(), children, parent, true]);
+}
+
+RegexNode.prototype = Object.create(Node.prototype);
+
+/**
+ * @param name
+ * @param [children]
+ * @param [parent]
+ *
+ * @implements Node
+ * @constructor
+ */
 function StringNode(name, children, parent) {
-  Node.apply(this, [name, new StringAssert(), children, parent, false]);
+  Node.apply(this, [name, new StringTypeAssert(), children, parent, false]);
 
   this.greaterThan = function (num) {
     this.asserts.push(new GreaterThanAssert(num));
@@ -474,6 +586,11 @@ function StringNode(name, children, parent) {
 
   this.notEmpty = function () {
     this.asserts.push(new NotEmptyAssert());
+    return this;
+  };
+
+  this.regex = function (expr, expects) {
+    this.asserts.push(new RegexAssert(expr, expects));
     return this;
   };
 }
@@ -501,12 +618,16 @@ configurator.ArrayNode = ArrayNode;
 configurator.ObjectNode = ObjectNode;
 configurator.MixedNode = MixedNode;
 configurator.FunctionNode = FunctionNode;
+configurator.RegexNode = RegexNode;
+configurator.DateNode = DateNode;
 
 if (typeof define === 'function' && define.amd) {
-  define([], configurator);
+  define([], function () {
+    return configurator;
+  });
 } else if (typeof exports === 'object') {
   module.exports = configurator;
-}else{
+} else {
   root.configurator = configurator;
 }
 

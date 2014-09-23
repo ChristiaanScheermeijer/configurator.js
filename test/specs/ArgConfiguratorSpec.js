@@ -10,7 +10,6 @@ describe('ArgConfigSpec', function () {
     });
   });
 
-  sharedPropertiesSpecHelper();
   sharedCollectionSpecHelper();
   sharedArraySpecHelper();
   sharedAssertSpecHelper();

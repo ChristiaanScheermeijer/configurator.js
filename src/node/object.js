@@ -7,7 +7,7 @@
  * @constructor
  */
 function ObjectNode(name, children, parent) {
-  Node.apply(this, [name, new ObjectAssert(), children, parent, true]);
+  Node.apply(this, [name, new ObjectTypeAssert(), children, parent, true]);
 }
 
 ObjectNode.prototype = Object.create(Node.prototype);

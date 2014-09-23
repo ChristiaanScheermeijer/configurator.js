@@ -35,7 +35,7 @@ function sharedCollectionSpecHelper() {
             }
           ]
         });
-      }).toThrowError(/type mismatch expected `string` got `boolean`/);
+      }).toThrowError(/type mismatch expected `\[object String\]` got `\[object Boolean\]`/);
     });
   });
 }

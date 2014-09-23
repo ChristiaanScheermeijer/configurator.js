@@ -17,7 +17,7 @@ function sharedArraySpecHelper() {
           property1: 5,
           array: [true, false, 'string']
         });
-      }).toThrowError(/type mismatch expected `boolean` got `string`/);
+      }).toThrowError(/type mismatch expected `\[object Boolean\]` got `\[object String\]`/);
     });
   });
 }

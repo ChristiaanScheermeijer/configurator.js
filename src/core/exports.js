@@ -1,7 +1,9 @@
 if (typeof define === 'function' && define.amd) {
-  define([], configurator);
+  define([], function () {
+    return configurator;
+  });
 } else if (typeof exports === 'object') {
   module.exports = configurator;
-}else{
+} else {
   root.configurator = configurator;
 }

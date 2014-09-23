@@ -7,7 +7,7 @@
  * @constructor
  */
 function NumberNode(name, children, parent) {
-  Node.apply(this, [name, new NumberAssert(), children, parent, false]);
+  Node.apply(this, [name, new NumberTypeAssert(), children, parent, false]);
 
   this.greaterThan = function (num) {
     this.asserts.push(new GreaterThanAssert(num));
@@ -21,6 +21,11 @@ function NumberNode(name, children, parent) {
 
   this.choice = function (choices) {
     this.asserts.push(new ChoiceAssert(choices));
+    return this;
+  };
+
+  this.regex = function (expr, expects) {
+    this.asserts.push(new RegexAssert(expr, expects));
     return this;
   };
 }
