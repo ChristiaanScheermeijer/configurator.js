@@ -33,3 +33,7 @@ utils.isArray = function (value) {
 utils.isRegexp = function (value) {
   return toString(value) === '[object RegExp]';
 };
+
+utils.isDate = function (value) {
+  return toString(value) === '[object Date]';
+};

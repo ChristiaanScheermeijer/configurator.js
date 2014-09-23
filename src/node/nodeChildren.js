@@ -35,6 +35,10 @@ function NodeChildren(parent) {
     return new RegexNode(name, null, parent);
   };
 
+  this.dateNode = function (name) {
+    return new DateNode(name, null, parent);
+  };
+
   this.end = function () {
     return parent;
   };

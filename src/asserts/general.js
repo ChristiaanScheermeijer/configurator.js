@@ -38,12 +38,14 @@ function RegexAssert(expression, expect) {
   }
   var regexResult = expect || true;
   this.test = function (node, value) {
-    if (true === utils.isRegexp(regex)) {
-      if (regex.test(value) !== regexResult) {
-        throw new AssertError(node, 'RegexAssert', 'Expected value to match regex `' + regex.toString() + '`');
+    if (true === utils.isString(value) || true === utils.isNumber(value)) {
+      if (true === utils.isRegexp(regex)) {
+        if (regex.test(value) !== regexResult) {
+          throw new AssertError(node, 'RegexAssert', 'Expected value to match regex `' + regex.toString() + '`');
+        }
+      } else {
+        throw new AssertError(node, 'WrongRegexAssert', 'Regex not valid');
       }
-    } else {
-      throw new AssertError(node, 'WrongRegexAssert', 'Regex not valid');
     }
   };
 }

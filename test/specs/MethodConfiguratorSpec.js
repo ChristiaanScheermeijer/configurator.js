@@ -10,7 +10,6 @@ describe('MethodConfigSpec', function () {
     });
   });
 
-  sharedNodeTypeSpecHelper();
   sharedCollectionSpecHelper();
   sharedArraySpecHelper();
   sharedAssertSpecHelper();

@@ -182,15 +182,12 @@ var plainConfiguration = config.get();
 
 #### BooleanNode
   - required()
-  - regex(expression)
 
 #### ObjectNode
   - required()
-  - regex(expression)
 
 #### ArrayNode
   - required()
-  - regex(expression)
   - count(min, max)
 
 #### MixedNode
@@ -203,7 +200,6 @@ var plainConfiguration = config.get();
 
 #### FunctionNode
   - required()
-  - regex(expression)
 
 #### RegexNode
   - required()
@@ -227,8 +223,10 @@ gender.set('not a gender'); // throws AssertError
 
   - fixed issue #1
   - fixed issue #2
+  - regex assert only for String, Number and Mixed nodes
   - added utils
   - added RegexNode
+  - added DateNode
 
 ### 0.1.0
 

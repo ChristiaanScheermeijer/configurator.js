@@ -28,6 +28,11 @@ function MixedNode(name, children, parent) {
     this.asserts.push(new NotEmptyAssert());
     return this;
   };
+
+  this.regex = function (expr, expects) {
+    this.asserts.push(new RegexAssert(expr, expects));
+    return this;
+  };
 }
 
 MixedNode.prototype = Object.create(Node.prototype);

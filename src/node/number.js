@@ -23,6 +23,11 @@ function NumberNode(name, children, parent) {
     this.asserts.push(new ChoiceAssert(choices));
     return this;
   };
+
+  this.regex = function (expr, expects) {
+    this.asserts.push(new RegexAssert(expr, expects));
+    return this;
+  };
 }
 
 NumberNode.prototype = Object.create(Node.prototype);

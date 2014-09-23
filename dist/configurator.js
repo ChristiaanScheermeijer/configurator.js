@@ -39,6 +39,10 @@ utils.isRegexp = function (value) {
   return toString(value) === '[object RegExp]';
 };
 
+utils.isDate = function (value) {
+  return toString(value) === '[object Date]';
+};
+
 /**
  * @param node
  * @param message
@@ -111,12 +115,14 @@ function RegexAssert(expression, expect) {
   }
   var regexResult = expect || true;
   this.test = function (node, value) {
-    if (true === utils.isRegexp(regex)) {
-      if (regex.test(value) !== regexResult) {
-        throw new AssertError(node, 'RegexAssert', 'Expected value to match regex `' + regex.toString() + '`');
+    if (true === utils.isString(value) || true === utils.isNumber(value)) {
+      if (true === utils.isRegexp(regex)) {
+        if (regex.test(value) !== regexResult) {
+          throw new AssertError(node, 'RegexAssert', 'Expected value to match regex `' + regex.toString() + '`');
+        }
+      } else {
+        throw new AssertError(node, 'WrongRegexAssert', 'Regex not valid');
       }
-    } else {
-      throw new AssertError(node, 'WrongRegexAssert', 'Regex not valid');
     }
   };
 }
@@ -201,6 +207,15 @@ function RegexTypeAssert() {
   };
 }
 
+function DateTypeAssert() {
+  this.test = function (node, value) {
+    if (false === utils.isDate(value)) {
+      throw new AssertError(node, 'Date', 'type mismatch expected `[object Date]` got `' + utils.callToString(value) + '`');
+    }
+    return true;
+  };
+}
+
 /**
  * @constructor
  */
@@ -245,11 +260,6 @@ Node.prototype.required = function () {
 
 Node.prototype.setDefault = function (val) {
   this.defaultValue = val;
-  return this;
-};
-
-Node.prototype.regex = function (expr, expects) {
-  this.asserts.push(new RegexAssert(expr, expects));
   return this;
 };
 
@@ -381,6 +391,20 @@ BooleanNode.prototype = Object.create(Node.prototype);
  * @implements Node
  * @constructor
  */
+function DateNode(name, children, parent) {
+  Node.apply(this, [name, new DateTypeAssert(), children, parent, true]);
+}
+
+DateNode.prototype = Object.create(Node.prototype);
+
+/**
+ * @param name
+ * @param [children]
+ * @param [parent]
+ *
+ * @implements Node
+ * @constructor
+ */
 function FunctionNode(name, children, parent) {
   Node.apply(this, [name, new FunctionTypeAssert(), children, parent, false]);
 }
@@ -415,6 +439,11 @@ function MixedNode(name, children, parent) {
 
   this.notEmpty = function () {
     this.asserts.push(new NotEmptyAssert());
+    return this;
+  };
+
+  this.regex = function (expr, expects) {
+    this.asserts.push(new RegexAssert(expr, expects));
     return this;
   };
 }
@@ -458,6 +487,10 @@ function NodeChildren(parent) {
     return new RegexNode(name, null, parent);
   };
 
+  this.dateNode = function (name) {
+    return new DateNode(name, null, parent);
+  };
+
   this.end = function () {
     return parent;
   };
@@ -488,6 +521,11 @@ function NumberNode(name, children, parent) {
     this.asserts.push(new ChoiceAssert(choices));
     return this;
   };
+
+  this.regex = function (expr, expects) {
+    this.asserts.push(new RegexAssert(expr, expects));
+    return this;
+  };
 }
 
 NumberNode.prototype = Object.create(Node.prototype);
@@ -516,8 +554,6 @@ ObjectNode.prototype = Object.create(Node.prototype);
  */
 function RegexNode(name, children, parent) {
   Node.apply(this, [name, new RegexTypeAssert(), children, parent, true]);
-
-  this.regex = null;
 }
 
 RegexNode.prototype = Object.create(Node.prototype);
@@ -552,6 +588,11 @@ function StringNode(name, children, parent) {
     this.asserts.push(new NotEmptyAssert());
     return this;
   };
+
+  this.regex = function (expr, expects) {
+    this.asserts.push(new RegexAssert(expr, expects));
+    return this;
+  };
 }
 
 StringNode.prototype = Object.create(Node.prototype);
@@ -578,6 +619,7 @@ configurator.ObjectNode = ObjectNode;
 configurator.MixedNode = MixedNode;
 configurator.FunctionNode = FunctionNode;
 configurator.RegexNode = RegexNode;
+configurator.DateNode = DateNode;
 
 if (typeof define === 'function' && define.amd) {
   define([], function () {

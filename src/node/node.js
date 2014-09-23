@@ -45,11 +45,6 @@ Node.prototype.setDefault = function (val) {
   return this;
 };
 
-Node.prototype.regex = function (expr, expects) {
-  this.asserts.push(new RegexAssert(expr, expects));
-  return this;
-};
-
 Node.prototype.getLongname = function () {
   var name = [this.name], prev = this;
 

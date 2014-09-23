@@ -60,3 +60,12 @@ function RegexTypeAssert() {
     return true;
   };
 }
+
+function DateTypeAssert() {
+  this.test = function (node, value) {
+    if (false === utils.isDate(value)) {
+      throw new AssertError(node, 'Date', 'type mismatch expected `[object Date]` got `' + utils.callToString(value) + '`');
+    }
+    return true;
+  };
+}
