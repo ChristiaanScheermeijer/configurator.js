@@ -227,7 +227,7 @@ function Node(name, assert, children, parent, allowChildNodes) {
   this.nodeChildren = null;
   this.allowChildNodes = allowChildNodes || false;
   this.asserts = assert ? [assert] : [];
-  this.defaultValue = null;
+  this.defaultValue = undefined;
   this.value = undefined;
 
   // for the argument tree builder
@@ -283,7 +283,7 @@ Node.prototype.validate = function (value) {
       throw new Error('Node `' + this.getLongname() + '` is required.');
     }
 
-    if (this.defaultValue) {
+    if (typeof this.defaultValue !== 'undefined') {
       value = this.defaultValue;
     } else {
       return this.value;
