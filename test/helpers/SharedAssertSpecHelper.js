@@ -30,7 +30,7 @@ function sharedAssertSpecHelper() {
       it('should throw a error if string length is greater than allowed', function () {
         expect(function () {
           config.set({
-            property1:  5,
+            property1: 5,
             collection: [
               {
                 property1: 'short'
@@ -43,7 +43,7 @@ function sharedAssertSpecHelper() {
       it('should throw a error if string length is less than allowed', function () {
         expect(function () {
           config.set({
-            property1:  5,
+            property1: 5,
             collection: [
               {
                 property1: 'this is a very long string and is not allowed..'
@@ -56,7 +56,7 @@ function sharedAssertSpecHelper() {
       it('should be able to set string if it its length is between greaterThan and lessThan', function () {
         expect(function () {
           config.set({
-            property1:  5,
+            property1: 5,
             collection: [
               {
                 property1: 'this is correct'
@@ -72,7 +72,7 @@ function sharedAssertSpecHelper() {
         expect(function () {
           config.set({
             property1: 5,
-            email:     'email@address.com'
+            email: 'email@address.com'
           });
         }).not.toThrow();
       });
@@ -81,7 +81,7 @@ function sharedAssertSpecHelper() {
         expect(function () {
           config.set({
             property1: 5,
-            email:     'emailaddrescom'
+            email: 'emailaddrescom'
           });
         }).toThrowError(/Expected value to match regex/);
       });
@@ -92,7 +92,7 @@ function sharedAssertSpecHelper() {
         expect(function () {
           config.set({
             property1: 5,
-            gender:    'male',
+            gender: 'male',
             subscribe: 0
           });
         }).not.toThrow();
@@ -102,7 +102,7 @@ function sharedAssertSpecHelper() {
         expect(function () {
           config.set({
             property1: 5,
-            gender:    'notagender'
+            gender: 'notagender'
           });
         }).toThrowError(/Given value is not a valid choice, choose from/);
 
@@ -120,7 +120,7 @@ function sharedAssertSpecHelper() {
         expect(function () {
           config.set({
             property1: 5,
-            country:   'Netherlands'
+            country: 'Netherlands'
           });
         }).not.toThrow();
       });
@@ -129,7 +129,7 @@ function sharedAssertSpecHelper() {
         expect(function () {
           config.set({
             property1: 5,
-            country:   ''
+            country: ''
           });
         }).toThrowError(/Expect value not to be blank/);
       });
@@ -159,6 +159,19 @@ function sharedAssertSpecHelper() {
             arrayCount: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
           });
         }).toThrowError(/Expected array to contain 10 or less values/);
+      });
+    });
+
+    describe('modifier', function () {
+      it('should modify the set value', function () {
+        expect(function () {
+          config.set({
+            property1: 5,
+            modified: 'suffix'
+          });
+        }).not.toThrow();
+
+        expect(config.get().modified).toBe('prefix-suffix');
       });
     });
   });

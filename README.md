@@ -167,6 +167,7 @@ var plainConfiguration = config.get();
 
 #### StringNode
   - required()
+  - addModifier(callback)
   - regex(expression)
   - greaterThan(chars)
   - lessThan(chars)
@@ -175,6 +176,7 @@ var plainConfiguration = config.get();
 
 #### NumberNode
   - required()
+  - addModifier(callback)
   - regex(expression)
   - greaterThan(num)
   - lessThan(num)
@@ -182,16 +184,20 @@ var plainConfiguration = config.get();
 
 #### BooleanNode
   - required()
+  - addModifier(callback)
 
 #### ObjectNode
   - required()
+  - addModifier(callback)
 
 #### ArrayNode
   - required()
+  - addModifier(callback)
   - count(min, max)
 
 #### MixedNode
   - required()
+  - addModifier(callback)
   - regex(expression)
   - greaterThan(chars)
   - lessThan(chars)
@@ -200,9 +206,11 @@ var plainConfiguration = config.get();
 
 #### FunctionNode
   - required()
+  - addModifier(callback)
 
 #### RegexNode
   - required()
+  - addModifier(callback)
 
 ### Single parameter validation
 
@@ -218,6 +226,11 @@ gender.set('not a gender'); // throws AssertError
 ```
 
 ## Changelog
+
+### Develop
+
+  - fixed issue where NumberNode doesn't accept 0
+  - added Node modifiers
 
 ### 0.1.1
 

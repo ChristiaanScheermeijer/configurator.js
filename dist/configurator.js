@@ -229,6 +229,7 @@ function Node(name, assert, children, parent, allowChildNodes) {
   this.asserts = assert ? [assert] : [];
   this.defaultValue = undefined;
   this.value = undefined;
+  this.modifiers = [];
 
   // for the argument tree builder
   if (true === this.allowChildNodes && true === utils.isArray(children) && children.length > 0) {
@@ -273,6 +274,14 @@ Node.prototype.getLongname = function () {
   }
 
   return 'root[' + name.reverse().join('][') + ']';
+};
+
+Node.prototype.addModifier = function (modifier) {
+  if (typeof modifier === 'function') {
+      this.modifiers.push(modifier);
+  }
+
+  return this;
 };
 
 Node.prototype.validate = function (value) {
@@ -325,6 +334,12 @@ Node.prototype.validate = function (value) {
   } else {
     // validate StringNode, NumberNode, BooleanNode or MixedNode
     validatedVal = value;
+  }
+
+  if (this.modifiers.length > 0 && this.defaultValue != validatedVal) {
+    for (var mi = 0; mi < this.modifiers.length; mi++) {
+      validatedVal = this.modifiers[mi].call(this, validatedVal);
+    }
   }
 
   this.value = validatedVal;

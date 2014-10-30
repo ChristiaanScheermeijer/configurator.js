@@ -42,6 +42,9 @@ function methodConfigHelper() {
         .mixedNode('mixedNodeNotEmpty').notEmpty().end()
         .arrayNode('arrayCount').count(1, 10).end()
         .functionNode('callback').end()
+        .stringNode('modified').addModifier(function(val) {
+            return 'prefix-' + val;
+        }).end()
       .end();
   });
 
@@ -80,7 +83,10 @@ function argConfigHelper() {
       new configurator.MixedNode('mixedNode').choice([true, 'string', 5]),
       new configurator.MixedNode('mixedNodeNotEmpty').notEmpty(),
       new configurator.ArrayNode('arrayCount').count(1, 10),
-      new configurator.FunctionNode('callback')
+      new configurator.FunctionNode('callback'),
+      new configurator.StringNode('modified').addModifier(function(val) {
+          return 'prefix-' + val;
+      })
     ]);
   });
 
