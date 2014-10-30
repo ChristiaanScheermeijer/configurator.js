@@ -85,6 +85,22 @@ function sharedAssertSpecHelper() {
           });
         }).toThrowError(/Expected value to match regex/);
       });
+
+      it('should be able to set a valid value twice tested by a custom regex with global flag', function () {
+        expect(function () {
+          config.set({
+            property1: 5,
+            regexGlobal: 'test'
+          });
+        }).not.toThrow();
+
+        expect(function () {
+          config.set({
+            property1: 5,
+            regexGlobal: 'test'
+          });
+        }).not.toThrow();
+      });
     });
 
     describe('choice', function () {

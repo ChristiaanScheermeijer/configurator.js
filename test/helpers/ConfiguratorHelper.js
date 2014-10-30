@@ -34,6 +34,7 @@ function methodConfigHelper() {
           .end()
         .end()
         .stringNode('email').regex(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i).end()
+        .stringNode('regexGlobal').regex(/^test$/g).end()
         .stringNode('gender').choice(['male', 'female']).end()
         .stringNode('country').notEmpty().end()
         .numberNode('subscribe').choice([0, 1]).end()
@@ -76,6 +77,7 @@ function argConfigHelper() {
         new configurator.StringNode('all')
       ]),
       new configurator.StringNode('email').regex(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i),
+      new configurator.StringNode('regexGlobal').regex(/^test$/g),
       new configurator.StringNode('gender').choice(['male', 'female']),
       new configurator.StringNode('country').notEmpty(),
       new configurator.NumberNode('subscribe').choice([0, 1]),

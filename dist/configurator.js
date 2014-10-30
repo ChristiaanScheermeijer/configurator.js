@@ -113,8 +113,12 @@ function RegexAssert(expression, expect) {
   } else if (utils.isString(expression)) {
     regex = new RegExp(expression);
   }
+
   var regexResult = expect || true;
   this.test = function (node, value) {
+    // reset lastIndex due to regex bug with global flag
+    regex.lastIndex = 0;
+
     if (true === utils.isString(value) || true === utils.isNumber(value)) {
       if (true === utils.isRegexp(regex)) {
         if (regex.test(value) !== regexResult) {
