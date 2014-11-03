@@ -161,6 +161,7 @@ Node.prototype.clone = function () {
   var clone = new this.constructor('clone', [], null);
   clone.parent = this.parent;
   clone.asserts = this.asserts;
+  clone.childNodesAll = this.childNodesAll;
   clone.defaultValue = this.defaultValue;
   clone.isRequired = this.isRequired;
   clone.modifiers = this.modifiers;
