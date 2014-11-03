@@ -325,7 +325,6 @@ Node.prototype.validate = function (value) {
         // validate same validator for all Array children
         var clone = this.childNodesAll.clone();
         validatedVal[i] = clone.set(value[i]);
-        console.log(clone);
       }
     } else {
       for (index in this.childNodes) {
