@@ -31,3 +31,4 @@ function NumberNode(name, children, parent) {
 }
 
 NumberNode.prototype = Object.create(Node.prototype);
+NumberNode.prototype.constructor = NumberNode;

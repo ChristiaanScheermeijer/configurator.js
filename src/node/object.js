@@ -11,3 +11,4 @@ function ObjectNode(name, children, parent) {
 }
 
 ObjectNode.prototype = Object.create(Node.prototype);
+ObjectNode.prototype.constructor = ObjectNode;

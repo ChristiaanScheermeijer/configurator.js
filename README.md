@@ -229,6 +229,7 @@ gender.set('not a gender'); // throws AssertError
 
 ### Develop
 
+  - fixed `all` children duplicate bug
   - fixed issue where NumberNode doesn't accept 0
   - fixed issue where RegexNode fails with /g flag
   - added Node modifiers

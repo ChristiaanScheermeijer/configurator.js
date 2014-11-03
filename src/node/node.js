@@ -6,6 +6,7 @@ function Node(name, assert, children, parent, allowChildNodes) {
   this.parent = parent;
   this.isRequired = false;
   this.childNodes = {};
+  this.childNodesAll = null;
   this.nodeChildren = null;
   this.allowChildNodes = allowChildNodes || false;
   this.asserts = assert ? [assert] : [];
@@ -14,16 +15,25 @@ function Node(name, assert, children, parent, allowChildNodes) {
   this.modifiers = [];
 
   // for the argument tree builder
-  if (true === this.allowChildNodes && true === utils.isArray(children) && children.length > 0) {
-    for (var i = 0; i < children.length; i++) {
-      children[i].parent = this;
-      this.childNodes[children[i].name] = children[i];
+  if (true === this.allowChildNodes && true === utils.isArray(children)) {
+    if (children.length === 1 && children[0].name === 'all') {
+      this.childNodesAll = children[0];
+      this.childNodesAll.parent = this;
+    }else{
+      for (var i = 0; i < children.length; i++) {
+        children[i].parent = this;
+        this.childNodes[children[i].name] = children[i];
+      }
     }
   }
 
   // for the method tree builder
   if (parent && parent.childNodes) {
-    parent.childNodes[name] = this;
+    if (this.name === 'all') {
+      parent.childNodesAll = this;
+    }else{
+      parent.childNodes[name] = this;
+    }
   }
 }
 
@@ -32,7 +42,7 @@ Node.prototype.get = function () {
 };
 
 Node.prototype.set = function (val) {
-  this.validate(val);
+  this.value = this.validate(val);
   return this.value;
 };
 
@@ -77,7 +87,7 @@ Node.prototype.validate = function (value) {
     if (typeof this.defaultValue !== 'undefined') {
       value = this.defaultValue;
     } else {
-      return this.value;
+      return undefined;
     }
   }
 
@@ -88,10 +98,11 @@ Node.prototype.validate = function (value) {
   if (true === this.allowChildNodes && true === utils.isArray(value)) {
     // validate ArrayNode or MixedNode
     validatedVal = [];
-    if (this.childNodes && this.childNodes.all) {
+    if (this.childNodesAll) {
       for (i = 0; i < value.length; i++) {
         // validate same validator for all Array children
-        validatedVal[i] = this.childNodes.all.set(value[i]);
+        var clone = this.childNodesAll.clone();
+        validatedVal[i] = clone.set(value[i]);
       }
     } else {
       for (index in this.childNodes) {
@@ -103,10 +114,10 @@ Node.prototype.validate = function (value) {
     // validate ObjectNode or MixedNode
     validatedVal = {};
 
-    if (this.childNodes && this.childNodes.all) {
+    if (this.childNodesAll) {
       for (index in value) {
         // validate same validator for all Object children
-        validatedVal[index] = this.childNodes.all.set(value[index]);
+        validatedVal[index] = this.childNodesAll.clone().set(value[index]);
       }
     } else {
       for (index in this.childNodes) {
@@ -124,8 +135,7 @@ Node.prototype.validate = function (value) {
     }
   }
 
-  this.value = validatedVal;
-  return this.value;
+  return validatedVal;
 };
 
 Node.prototype.end = function () {
@@ -145,4 +155,20 @@ Node.prototype.children = function () {
   } else {
     throw new Error('Node ' + this.name + ' cannot carry any children, only `Object`, `Array` and `Mixed` nodes do.');
   }
+};
+
+Node.prototype.clone = function () {
+  var clone = new this.constructor('clone', [], null);
+  clone.parent = this.parent;
+  clone.asserts = this.asserts;
+  clone.defaultValue = this.defaultValue;
+  clone.isRequired = this.isRequired;
+  clone.modifiers = this.modifiers;
+  clone.allowChildNodes = this.allowChildNodes;
+
+  for(var index in this.childNodes) {
+    clone.childNodes[index] = this.childNodes[index].clone();
+  }
+
+  return clone;
 };

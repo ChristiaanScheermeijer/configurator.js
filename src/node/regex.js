@@ -11,3 +11,4 @@ function RegexNode(name, children, parent) {
 }
 
 RegexNode.prototype = Object.create(Node.prototype);
+RegexNode.prototype.constructor = RegexNode;

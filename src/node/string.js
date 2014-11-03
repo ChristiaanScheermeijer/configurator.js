@@ -36,3 +36,4 @@ function StringNode(name, children, parent) {
 }
 
 StringNode.prototype = Object.create(Node.prototype);
+StringNode.prototype.constructor = StringNode;

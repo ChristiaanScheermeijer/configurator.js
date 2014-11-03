@@ -11,3 +11,4 @@ function BooleanNode(name, children, parent) {
 }
 
 BooleanNode.prototype = Object.create(Node.prototype);
+BooleanNode.prototype.constructor = BooleanNode;

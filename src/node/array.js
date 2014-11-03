@@ -16,3 +16,4 @@ function ArrayNode(name, children, parent) {
 }
 
 ArrayNode.prototype = Object.create(Node.prototype);
+ArrayNode.prototype.constructor = ArrayNode;

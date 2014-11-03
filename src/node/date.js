@@ -11,3 +11,4 @@ function DateNode(name, children, parent) {
 }
 
 DateNode.prototype = Object.create(Node.prototype);
+DateNode.prototype.constructor = DateNode;

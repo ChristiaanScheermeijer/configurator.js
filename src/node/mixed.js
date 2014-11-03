@@ -36,3 +36,4 @@ function MixedNode(name, children, parent) {
 }
 
 MixedNode.prototype = Object.create(Node.prototype);
+MixedNode.prototype.constructor = MixedNode;
